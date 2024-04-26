@@ -1,6 +1,5 @@
 import datetime
-from typing import Self, Never
-
+from typing import Self
 from django.core.exceptions import ValidationError
 from django.db import models
 

@@ -1,5 +1,8 @@
 */.idea/
 /server/venv/
+/client/node_modules/
+/client/.next/
+/client/package-lock.json
 **.sqlite3
 run.sh
 **/static/

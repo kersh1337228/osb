@@ -2,6 +2,7 @@ import datetime
 import unicodedata
 from typing import Self
 import django.db.models
+from django.core import validators
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import password_validation
@@ -86,11 +87,29 @@ class User(models.Model):
         max_length=255,
         null=False,
         blank=False,
-        unique=True
+        unique=True,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^[a-z]{1}[a-z0-9_]+$',
+                message='Username must satisfy: "^[a-z]{1}[a-z0-9_]+$"',
+                code='invalid_registration'
+            ),
+        )
     )
     password = models.CharField(
         verbose_name='Password',
-        max_length=127
+        max_length=31,
+        null=False,
+        blank=False,
+        unique=False,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]}$',
+                message='Password must satisfy: '
+                        r'"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]}$"',
+                code='invalid_registration'
+            ),
+        )
     )
     email = models.EmailField(
         verbose_name='Email-address',
@@ -111,12 +130,26 @@ class User(models.Model):
         max_length=255,
         null=True,
         blank=True,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^[A-Z]{1}[a-z]+$',
+                message='First name must satisfy: "^[A-Z]{1}[a-z]+$"',
+                code='invalid_person'
+            ),
+        )
     )
     last_name = models.CharField(
         verbose_name='Last name',
         max_length=255,
         null=True,
         blank=True,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^[A-Z]{1}[a-z]+$',
+                message='Last name must satisfy: "^[A-Z]{1}[a-z]+$"',
+                code='invalid_person'
+            ),
+        )
     )
     sex = models.CharField(
         verbose_name='Sex',
