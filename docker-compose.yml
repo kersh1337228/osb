@@ -23,6 +23,7 @@ services:
     container_name: django
     build:
       context: ./backend
+    stdin_open: true
     restart: always
     volumes:
       - ./backend:/usr/src/app/backend

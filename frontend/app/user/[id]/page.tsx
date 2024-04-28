@@ -1,6 +1,8 @@
+'use server';
+
 import {
     jsonRequest
-} from '../../../src/utils/functions';
+} from '../../../src/actions/request';
 import {
     HTTPRequestMethod,
     serverURL
@@ -24,16 +26,16 @@ export default async function UserPage(
     ).then(
         response => response.json()
     ).then(response => {
-        console.log(response);
-        return 'Success';
+        return response;
     }).catch((response) => {
-        console.log(response);
-        return 'Error';
+        console.error(response);
     });
+    console.log(response)
 
     return (
         <main>
             <h1>{params.id}</h1>
+            {/*<h1>{response.user.username}</h1>*/}
         </main>
     );
 }

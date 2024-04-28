@@ -33,7 +33,7 @@ export function formDataSerialize(
     return obj;
 }
 
-const safeMethods = [
+export const safeMethods = [
     'GET',
     'HEAD',
     'TRACE',
@@ -54,9 +54,6 @@ export async function jsonRequest(
         const csrftoken = getCookie('csrftoken');
         if (csrftoken)
             headers['X-CSRFToken'] = csrftoken;
-        // const sessionid = getCookie('sessionid');
-        // if (sessionid)
-            // headers['X-CSRFToken'] = csrftoken;
         body = JSON.stringify(body);
     }
     return fetch(
@@ -70,7 +67,7 @@ export async function jsonRequest(
                 'Content-Type': 'application/json',
             },
             // mode: 'cors',
-            // credentials: 'include',
+            credentials: 'include',
             body: body as string
         }
     );

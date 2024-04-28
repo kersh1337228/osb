@@ -11,6 +11,23 @@ from typing import (
 )
 
 
+class UserRegisterSerializer(AsyncModelSerializer):
+    async def register(
+            self: Self
+    ) -> User | Never:
+        if await self.is_valid(raise_exception=True):
+            user = await User.objects.acreate_user(
+                username=self.validated_data.get('username'),
+                email=self.validated_data.get('email'),
+                password=self.validated_data.get('password')
+            )
+            return user
+
+    class Meta:
+        model = User
+        fields = (model.USERNAME_FIELD,) + model.REQUIRED_FIELDS
+
+
 class UserLoginSerializer(AsyncModelSerializer):
     username = serializers.CharField(validators=())
     password = serializers.CharField(validators=())
@@ -30,25 +47,23 @@ class UserLoginSerializer(AsyncModelSerializer):
         fields = (model.USERNAME_FIELD,) + model.REQUIRED_FIELDS
 
 
+class UserCurrentSerializer(AsyncModelSerializer):
+    last_login = serializers.DateTimeField(
+        format='%Y/%m/%d %H:%M',
+        required=False
+    )
+
+    class Meta:
+        model = User
+        exclude = ('password', 'website', 'about', 'is_active')
+
+
 class UserSerializer(AsyncModelSerializer):
     last_login = serializers.DateTimeField(
         format='%Y/%m/%d %H:%M',
         required=False
     )
 
-    async def register(
-            self: Self
-    ) -> User | Never:
-        if self.is_valid(raise_exception=True):
-            user = User.objects.create_user(
-                self.validated_data.get('username'),
-                self.validated_data.get('email'),
-                self.validated_data.get('password')
-            )
-            return user
-
-
     class Meta:
         model = User
-        exclude = ('id', 'password')
-        optional_fields = ('created', 'last_updated', 'slug')
+        exclude = ('password',)

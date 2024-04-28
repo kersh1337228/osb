@@ -13,6 +13,7 @@ from django.contrib.auth.hashers import (
     is_password_usable,
     make_password
 )
+
 from src.apps.post.models import Post
 
 
@@ -52,6 +53,23 @@ class UserManager(models.Manager):
         )
         user.set_password(password)
         user.save(using=self._db)
+        return user
+
+    async def acreate_user(
+            self: Self,
+            username: str,
+            email: str,
+            password: str,
+            **kwargs
+    ):
+        email = UserManager.normalize_email(email)
+        user = self.model(
+            username=username,
+            email=email,
+            **kwargs
+        )
+        user.set_password(password)
+        await user.asave(using=self._db)
         return user
 
     def create_superuser(

@@ -1,6 +1,11 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.urls import path
-from .views import UserRegisterView, UserLoginView, UserAPIView
+from .views import (
+    UserRegisterView,
+    UserLoginView,
+    UserLogoutView,
+    UserAPIView
+)
 
 
 view = UserAPIView.as_view()
@@ -19,8 +24,13 @@ urlpatterns = (
     ),
     path(
         'logout',
-        UserLoginView.as_view(),
+        UserLogoutView.as_view(),
         name='user_logout'
+    ),
+    path(
+        'current',
+        view,
+        name='user_read'
     ),
     path(
         '<int:id>',

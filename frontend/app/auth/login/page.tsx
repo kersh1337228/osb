@@ -1,34 +1,19 @@
 'use client';
 
 import {
-    jsonRequest,
     formDataSerialize
 } from '../../../src/utils/functions';
 import {
-    HTTPRequestMethod,
-    clientURL
-} from '../../../src/utils/constants';
+    login,
+    UserCredentials
+} from '../../../src/actions/auth';
 
 export default function LoginPage(): React.ReactNode {
-
     async function submit(
         formData: FormData
     ) {
-        const response = await jsonRequest(
-            `${clientURL}/api/user/login`,
-            HTTPRequestMethod.POST,
-            {
-                cache: 'force-cache'
-            },
-            formDataSerialize(formData)
-        );
-        return await response.json().then(response => {
-            console.log(response);
-            return 'Success';
-        }).catch((response) => {
-            console.log(response);
-            return 'Error';
-        });
+        const r = await login(
+            formDataSerialize(formData) as UserCredentials);
     }
 
     return <main>

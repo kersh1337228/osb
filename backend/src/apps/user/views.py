@@ -2,10 +2,12 @@ from typing import Self
 from src.apps.user.models import User
 from src.apps.user.serializers import (
     UserSerializer,
-    UserLoginSerializer
+    UserLoginSerializer,
+    UserRegisterSerializer,
+    UserCurrentSerializer
 )
 from src.async_api.class_based import AsyncAPIView
-from django.contrib.auth import alogin
+from django.contrib.auth import alogin, alogout
 from rest_framework.response import Response
 from rest_framework import (
     parsers,
@@ -24,12 +26,16 @@ class UserRegisterView(AsyncAPIView):
             *args,
             **kwargs
     ):
-        print(request.__dict__, args, kwargs)
-
+        serializer = UserRegisterSerializer(data={
+            'username': request.data.get('username'),
+            'email': request.data.get('email') ,
+            'password': request.data.get('password')
+        })
+        user = await serializer.register()
 
         return Response(
             data={},
-            status=200
+            status=status.HTTP_201_CREATED
         )
 
 
@@ -52,13 +58,52 @@ class UserLoginView(AsyncAPIView):
         user = await serializer.login(username_field)
         if not user:
             pass
-        await alogin(request, user)
 
+        await alogin(request, user)
         return Response(
             data={
-                'csrftoken': request.META.get('CSRF_COOKIE'),
-                'sessionid': request.session.session_key
+                'id': request.user.id
             },
+            status=status.HTTP_200_OK
+        )
+
+
+class UserCurrentView(AsyncAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    async def get(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        if request.user.is_authenticated:
+            return Response(
+                data={
+                    'user': UserCurrentSerializer(request.user).data
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            data={
+                'user': None
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class UserLogoutView(AsyncAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    async def post(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        await alogout(request)
+        return Response(
+            data={},
             status=status.HTTP_200_OK
         )
 
