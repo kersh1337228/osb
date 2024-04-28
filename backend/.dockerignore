@@ -1,0 +1,6 @@
+/.idea/
+/venv/
+**.sqlite3
+run.sh
+**/static/
+**/migrations/
