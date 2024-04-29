@@ -6,7 +6,6 @@
 /frontend/.next/
 /frontend/package-lock.json
 **.sqlite3
-run.sh
 **/migrations/
 /nginx/static/
 /nginx/media/
@@ -14,4 +13,5 @@ run.sh
 /nginx/certbot/conf/accounts/
 /nginx/certbot/conf/renewal/
 /nginx/certbot/conf/renewal-hooks/
-/nginx/certbot/conf/live/osb.org/
+/nginx/certbot/conf/live/opensourceblog.ru/
+**.env
