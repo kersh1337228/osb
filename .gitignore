@@ -1,6 +1,7 @@
 */.idea/
 /backend/venv/
 /backend/**/__pycache__/
+/backend/tex/
 /frontend/node_modules/
 /frontend/.next/
 /frontend/package-lock.json

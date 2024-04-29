@@ -20,6 +20,16 @@ class Category(models.Model):
         null=True
     )
 
+    @property
+    def children(
+            self: Self
+    ) -> models.QuerySet:
+        return Category.objects.filter(
+            parent_category=self
+        ).select_related(
+            'parent_category'
+        )
+
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'

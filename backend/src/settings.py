@@ -9,7 +9,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = True
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = bool(os.environ.get('DEBUG', 0))
+DEBUG = bool(os.environ.get('DEBUG', 1))
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_HEADERS = ['*']
@@ -106,7 +106,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.SessionAuthentication'
         'src.async_api.authentication.AsyncSessionAuthentication'
     ],
     'DEFAULT_RENDERER_CLASSES': [
@@ -114,5 +113,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
     ]
 }

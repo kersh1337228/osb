@@ -129,3 +129,8 @@ class AsyncModelSerializer(ModelSerializer):
             )
 
         return self.instance
+
+    async def adata(self):
+        return await sync_to_async(
+            lambda parent: parent.data
+        )(super())
