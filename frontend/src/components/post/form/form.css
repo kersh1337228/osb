@@ -1,0 +1,36 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+input, textarea {
+    margin: 0;
+    padding: 0;
+}
+
+.field-wrapper {
+    width: 25%;
+}
+
+.field_input {
+    padding: 4px;
+    margin: 8px;
+    border: 1px solid black;
+    border-radius: 7px;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    font-family: "SF Pro Display", sans-serif;
+    font-size: 16px;
+}
+
+input[type="text"] {
+
+}
+
+textarea {
+    overflow: hidden;
+    resize: none;
+}
