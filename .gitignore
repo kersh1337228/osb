@@ -4,7 +4,6 @@
 /backend/tex/
 /frontend/node_modules/
 /frontend/.next/
-**.sqlite3
 **/migrations/
 /nginx/static/
 /nginx/media/
