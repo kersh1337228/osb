@@ -1,10 +1,15 @@
 */.idea/
+**.env
+
 /backend/venv/
 /backend/**/__pycache__/
 /backend/tex/
+**/migrations/
+
 /frontend/node_modules/
 /frontend/.next/
-**/migrations/
+/frontend/package-lock.json
+
 /nginx/static/
 /nginx/media/
 /nginx/db/
@@ -12,4 +17,3 @@
 /nginx/certbot/conf/renewal/
 /nginx/certbot/conf/renewal-hooks/
 /nginx/certbot/conf/live/opensourceblog.ru/
-**.env

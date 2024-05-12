@@ -1,5 +1,7 @@
 /.idea/
+/.git/
 /venv/
+dockerfile
 **.sqlite3
 run.sh
 **/static/
