@@ -13,46 +13,45 @@ services:
     volumes:
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
-      - ./nginx/static:/var/www/static
-      - ./nginx/media:/var/www/media
     networks:
       - frontend
-      - backend
 
   django:
     container_name: django
     build:
-      context: ./backend
+      context: ./django
     stdin_open: true
     restart: always
     volumes:
-      - ./backend:/usr/src/app
-    env_file: ./backend/.env
+      - ./next/public/static:/var/www/static
+      - ./next/public/media:/var/www/media
+    env_file: ./django/.env
     networks:
       - backend
       - frontend
 
-  nextjs:
-    container_name: nextjs
+  next:
+    container_name: next
     build: 
-      context: ./frontend
+      context: ./next
     stdin_open: true
     restart: always
     volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
-    env_file: ./frontend/.env
+      - /app/.next
+      - ./next/public/static:/app/public/static
+      - ./next/public/media:/app/public/media
+    env_file: ./next/.env
     networks:
       - backend
       - frontend
 
   postgres:
     container_name: postgres
-    image: postgres:16
+    build: 
+      context: ./postgres
     restart: always
     volumes:
-      - ./nginx/db:/var/lib/postgresql/data
+      - ./postgres/db:/var/lib/postgresql/data
     env_file: ./nginx/.env
     networks:
       - backend

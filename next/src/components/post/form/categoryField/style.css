@@ -1,0 +1,26 @@
+datalist {
+    display: none;
+    margin: -8px 8px 8px 8px;
+    border: 1px solid black;
+    border-radius: 0 0 7px 7px;
+    border-top: none;
+    box-sizing: border-box;
+    width: 300px;
+    padding: 5px;
+    max-height: 10rem;
+    overflow-y: auto
+
+}
+
+datalist option {
+    padding: 4px;
+    color: black;
+    margin-bottom: 1px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+datalist option:hover {
+    background-color: green;
+    color: white;
+}

@@ -1,0 +1,8 @@
+/.idea/
+/.git/
+/node_modules/
+/.next/
+/public/static/
+/public/media/
+package-lock.json
+dockerfile
