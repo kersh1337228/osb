@@ -1,10 +1,9 @@
-import Header from '../src/components/general/header/Header';
-import Footer from '../src/components/general/footer/Footer';
+import Header from '../src/components/root/header/Header';
+import Footer from '../src/components/root/footer/Footer';
 import {
     authenticate
 } from '../src/actions/auth';
 import './global.css';
-import UserProvider from '../src/components/general/providers/UserProvider';
 
 export default async function RootLayout(
     {
@@ -18,13 +17,9 @@ export default async function RootLayout(
     return (
         <html lang='en'>
             <body>
-                <UserProvider
-                    user={user}
-                >
-                    <Header />
-                    {children}
-                    <Footer />
-                </UserProvider>
+                <Header user={user} />
+                {children}
+                <Footer />
             </body>
         </html>
     );

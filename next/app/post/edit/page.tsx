@@ -1,9 +1,9 @@
 'use server';
 
-import EditForm from '../../../src/components/post/form/EditForm';
+import Form from '../../../src/components/post/form/Form';
 
 export default async function EditPost() {
     return <main className="fill">
-        <EditForm />
+        <Form />
     </main>;
 }

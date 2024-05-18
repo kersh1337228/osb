@@ -1,10 +1,8 @@
 'use server';
 
 import {
-    safeMethods
-} from '../utils/functions';
-import {
-    HTTPRequestMethod
+    HTTPRequestMethod,
+    safeHTTPRequestMethods
 } from '../utils/constants';
 import {
     cookies
@@ -14,44 +12,43 @@ export async function serverRequest(
     url: string,
     method: HTTPRequestMethod,
     options: Record<string, any> = {},
-    params: Record<string, any> = {},
-    body: Record<string, any> | string | null = {},
-    headers: Record<string, string> = {},
-): Promise<Response> {
+    data: Record<string, any> | FormData = {},
+    headers: Record<string, string> = {}
+): Promise<JSONResponse> {
     const cookieStore = cookies();
-
-    if (safeMethods.includes(method)) {
-        url += '?' + new URLSearchParams(body as Record<string, any>);
-        body = null;
-    } else {
-        const csrftoken = cookieStore.get('csrftoken')?.value;
-        if (csrftoken)
-            headers['X-CSRFToken'] = csrftoken;
-
-        body = JSON.stringify(body);
-    }
 
     const sessionid = cookieStore.get('sessionid')?.value;
     if (sessionid)
         headers['Cookie'] = `sessionid=${sessionid}`
 
-    const queryParams = new URLSearchParams();
-    for (const key in params)
-        queryParams.set(key, params[key]);
+    let body: string | FormData | null;
+    if (safeHTTPRequestMethods.includes(method)) {
+        const queryParams = new URLSearchParams(data as Record<string, any>);
+        url += queryParams.size ? queryParams : '';
+        body = null;
+    } else {
+        const csrftoken = cookieStore.get('csrftoken')?.value;
+        if (csrftoken) {
+            headers['Cookie'] += `;csrftoken=${csrftoken}`;
+            headers['X-CSRFToken'] = csrftoken;
+        }
+
+        if (data instanceof FormData)
+            body = data;
+        else {
+            body = JSON.stringify(data);
+            headers['Content-Type'] = 'application/json';
+        }
+    }
 
     const response = await fetch(
-        `${url}${queryParams.toString()}`,
+        url,
         {
             ...options,
             method,
-            headers: {
-                ...headers,
-                'Accepts': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            // mode: 'cors',
+            headers,
             credentials: 'include',
-            body: body as string
+            body
         }
     );
 
@@ -76,5 +73,14 @@ export async function serverRequest(
         });
     }
 
-    return response;
+    return {
+        data: await response.json().catch(_ => {}),
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries()),
+        redirected: response.redirected,
+        bodyUsed: response.bodyUsed
+    }
 }

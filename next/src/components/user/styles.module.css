@@ -1,0 +1,90 @@
+.userPage {
+    background: white;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-page section {
+    width: 50%;
+}
+
+.profile {
+    min-width: 800px;
+    box-sizing: border-box;
+
+    padding: 32px 0 16px 0;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 32px;
+}
+
+.profilePicture {
+    width: 256px;
+    height: 256px;
+    border-radius: 16px;
+    box-sizing: border-box;
+    object-fit: cover;
+    object-position: center;
+    overflow: clip;
+    overflow-clip-margin: border-box;
+}
+
+.profileData {
+    /*background: #ebebed;*/
+    /*border-radius: 16px;*/
+    /*padding: 16px;*/
+}
+
+.primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid black;
+}
+
+.username {
+    font-size: 18pt;
+    text-align: left;
+    font-weight: bold;
+}
+
+.lastLogin {
+    text-align: right;
+    opacity: 0.7;
+    font-size: 10pt;
+}
+
+.secondary {
+    border-spacing: 0 8px;
+}
+
+.secondary th {
+    text-align: left;
+    padding-right: 16px;
+}
+
+.website {
+    color: green;
+}
+
+.website:hover {
+    opacity: 0.6;
+}
+
+.posts {
+    min-width: 800px;
+    box-sizing: border-box;
+
+    padding: 16px 0;
+    margin: 0 auto;
+}
+
+.about {
+    font-family: 'CMU Serif', serif;
+    font-size: 12pt;
+}

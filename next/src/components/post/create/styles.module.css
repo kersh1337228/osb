@@ -1,0 +1,28 @@
+.header {
+    color: black;
+    font-size: 36px;
+    padding-bottom: 32px;
+}
+
+.form {
+    color: black;
+    display: grid;
+    width: 300px;
+    margin: 0 auto;
+}
+
+.button {
+    color: green;
+    background: #ededee;
+    padding: 4px;
+    margin: 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: 0.1s;
+}
+
+.button:hover {
+    background: green;
+    color: white;
+}

@@ -7,6 +7,7 @@ import {
     HTTPRequestMethod,
     serverURL
 } from '../../../src/utils/constants';
+import User from '../../../src/components/user/User';
 
 export default async function UserPage(
     {
@@ -17,24 +18,15 @@ export default async function UserPage(
         };
     }
 ) {
-    const response = await serverRequest(
+    const user = (await serverRequest(
         `${serverURL}/user/${params.id}`,
         HTTPRequestMethod.GET,
         {
             cache: 'force-cache'
         }
-    ).then(
-        response => response.json()
-    ).then(response => {
-        return response;
-    }).catch((response) => {
-        console.error(response);
-    });
+    )).data as User;
 
-    return (
-        <main>
-            <h1>{params.id}</h1>
-            <h1>{response.user.username}</h1>
-        </main>
-    );
+    return <User
+        user={user}
+    />
 }
