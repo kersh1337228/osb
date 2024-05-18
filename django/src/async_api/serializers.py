@@ -13,7 +13,6 @@ from rest_framework.serializers import (
     ModelSerializer,
     raise_errors_on_nested_writes
 )
-from django.core.exceptions import SynchronousOnlyOperation
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils import model_meta
 from typing import (
@@ -23,11 +22,34 @@ from typing import (
     Callable,
     Coroutine
 )
-
 from rest_framework.utils.serializer_helpers import (
     ReturnList,
     ReturnDict
 )
+
+
+def validated_method(
+        callback: Callable[
+            ['AsyncModelSerializer'],
+            Coroutine
+        ]
+) -> Callable[
+    ['AsyncModelSerializer'],
+    Coroutine[Any, Any, tuple[dict, bool]]
+]:
+    async def wrapped(
+            self: 'AsyncModelSerializer'
+    ):
+        try:
+            if await self.is_valid(raise_exception=True):
+                return await callback(self), True
+        except ValidationError as err:
+            errors = {}
+            for key, details in err.detail.items():
+                errors[key] = list(map(str, details))
+            return errors, False
+
+    return wrapped
 
 
 class AsyncSerializerMethodField(SerializerMethodField):
@@ -118,7 +140,7 @@ class AsyncListSerializer(ListSerializer):
     @property
     async def data(
             self: Self
-    ) -> dict[str, Any]:
+    ) -> ReturnList:
         if hasattr(self, 'initial_data') and not hasattr(self, '_validated_data'):
             msg = (
                 'When a serializer is passed a `data` keyword argument you '
@@ -149,8 +171,17 @@ class AsyncModelSerializer(ModelSerializer):
             data: dict[str, Any] = empty,
             **kwargs
     ):
-        setattr(cls.Meta, 'list_serializer_class', AsyncListSerializer)
-        return super().__new__(cls, instance, data, **kwargs)
+        setattr(
+            cls.Meta,
+            'list_serializer_class',
+            AsyncListSerializer
+        )
+        return super().__new__(
+            cls,
+            instance,
+            data,
+            **kwargs
+        )
 
     async def create(
             self: Self,
@@ -310,26 +341,8 @@ class AsyncModelSerializer(ModelSerializer):
 
         return ReturnDict(self._data, serializer=self)
 
-
-def validated_method(
-        callback: Callable[
-            [AsyncModelSerializer],
-            Coroutine
-        ]
-) -> Callable[
-    [AsyncModelSerializer],
-    Coroutine[Any, Any, tuple[dict, bool]]
-]:
-    async def wrapped(
-            self: AsyncModelSerializer
-    ):
-        try:
-            if await self.is_valid(raise_exception=True):
-                return await callback(self), True
-        except ValidationError as err:
-            errors = {}
-            for key, details in err.detail.items():
-                errors[key] = list(map(str, details))
-            return errors, False
-
-    return wrapped
+    @validated_method
+    async def create_or_update(
+            self: Self
+    ) -> None | Never:
+        await self.save()

@@ -1,4 +1,6 @@
 from typing import Self
+from asgiref.sync import sync_to_async
+from django.core import validators
 from rest_framework.exceptions import ValidationError
 from django.db import models
 
@@ -9,7 +11,14 @@ class Category(models.Model):
         max_length=255,
         null=False,
         blank=False,
-        unique=True
+        unique=True,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^[A-Z]{1}.+$',
+                message='Category title must satisfy: "^[A-Z]{1}[a-z]+$"',
+                code='invalid_person'
+            ),
+        )
     )
     parent_category = models.ForeignKey(
         'Category',
@@ -64,13 +73,43 @@ class PostMixin(models.Model):
         return Reaction.objects.filter(
             reacted_to=self
         ).select_related(
-            'by_user'
+            'publisher'
         )
+
+    @property
+    async def rating(
+            self: Self
+    ) -> tuple[int, int]:
+        PostMixin.objects.annotate()
+
+        reactions = Reaction.objects.filter(
+            reacted_to=self
+        ).values_list(
+            'type',
+            flat=True
+        )
+        pos = sum(await sync_to_async(reactions.__iter__)())
+        neg = await reactions.acount() - pos
+        return neg, pos
+
+    @staticmethod
+    async def rating_order(
+            posts: models.QuerySet
+    ):
+        temp = []
+        async for post in posts:
+            neg, pos = await post.rating
+            temp.append((pos - neg, post))
+        temp.sort(key=lambda pair: pair[0], reverse=True)
+
+        for post in map(lambda pair: pair[1], temp):
+            yield post
+
 
     def __str__(
             self: Self
     ) -> str:
-        return self.content[:32]
+        return self.content[:128]
 
 
 class Post(PostMixin):
@@ -78,7 +117,14 @@ class Post(PostMixin):
         verbose_name='Post title',
         max_length=255,
         null=False,
-        blank=False
+        blank=False,
+        validators=(
+            validators.RegexValidator(
+                regex=r'^[A-Z]{1}.+$',
+                message='Post title must satisfy: "^[A-Z]{1}[a-z]+$"',
+                code='invalid_person'
+            ),
+        )
     )
     categories = models.ManyToManyField(
         Category
@@ -164,7 +210,7 @@ class Reaction(models.Model):
             (False, '-')
         ]
     )
-    by_user = models.ForeignKey(
+    publisher = models.ForeignKey(
         'user.User',
         verbose_name='User who reacted',
         on_delete=models.CASCADE,
@@ -182,6 +228,6 @@ class Reaction(models.Model):
         verbose_name = 'Reaction'
         verbose_name_plural = 'Reactions'
         unique_together = (
-            'by_user',
+            'publisher',
             'reacted_to'
         )

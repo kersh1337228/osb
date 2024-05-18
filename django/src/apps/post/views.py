@@ -1,11 +1,16 @@
-from functools import reduce
-
-from django.db.models import Q
-
-from src.apps.post.models import Category, Post
+from src.apps.post.models import (
+    Category,
+    Post
+)
 from src.apps.post.serializers import (
-    CategorySerializer,
-    PostSerializer, CategoryListSerializer
+    CategoryEditSerializer,
+    CategoryListSerializer,
+    PostEditSerializer,
+    PostSerializer,
+    PostPartialSerializer,
+    CommentEditSerializer,
+    ReplyEditSerializer,
+    ReactionEditSerializer
 )
 from src.async_api.class_based import AsyncAPIView
 from rest_framework.response import Response
@@ -24,7 +29,7 @@ class CategoryAPIView(AsyncAPIView):
             *args,
             **kwargs
     ):
-        serializer = CategorySerializer(
+        serializer = CategoryEditSerializer(
             data=request.data
         )
 
@@ -46,7 +51,7 @@ class CategoryAPIView(AsyncAPIView):
             **kwargs
     ):
         try:
-            serializer = CategorySerializer(
+            serializer = CategoryEditSerializer(
                 instance=await Category.objects.aget(
                     id=kwargs.pop('id')
                 ),
@@ -112,9 +117,7 @@ class CategoryListAPIView(AsyncAPIView):
             status=status.HTTP_200_OK
         )
 
-
-class CategorySearchAPIView(AsyncAPIView):
-    async def get(
+    async def post(
             self,
             request,
             *args,
@@ -122,7 +125,7 @@ class CategorySearchAPIView(AsyncAPIView):
     ):
         return Response(
             data=Category.objects.filter(
-                title__icontains=request.query_params.get('query')
+                title__icontains=request.data.pop('query')
             ).values(
                 'id',
                 'title'
@@ -131,38 +134,123 @@ class CategorySearchAPIView(AsyncAPIView):
         )
 
 
-class PostAPIView(AsyncAPIView):
+class PostEditAPIViewMixin(AsyncAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    edit_serializer = None
+
+    @property
+    def post_model(self):
+        return self.edit_serializer.Meta.model
+
     async def post(
             self,
             request,
             *args,
             **kwargs
     ):
-        if request.user.is_authenticated:
-            serializer = PostSerializer(
-                data=request.data | {
-                    'publisher': request.user.id
-                }
+        serializer = self.edit_serializer(
+            data=request.data | {
+                'publisher': request.user.id
+            }
+        )
+
+        data, ok = await serializer.create_or_update()
+        if ok:
+            return Response(
+                data={},
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            data=data,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    async def patch(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        try:
+            post = await self.post_model.objects.aget(
+                id=kwargs.pop('id')
+            )
+            if post.publisher_id == request.user.id:
+                serializer = self.edit_serializer(
+                    instance=post,
+                    data=request.data,
+                    partial=True
+                )
+
+                data, ok = await serializer.create_or_update()
+                if ok:
+                    return Response(
+                        data={},
+                        status=status.HTTP_200_OK
+                    )
+                return Response(
+                    data=data,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            return Response(
+                data={
+                    'detail': f'Only owner can update {
+                        self.post_model.__name__.lower()
+                    }'
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except Post.DoesNotExist:
+            return Response(
+                data={
+                    'detail': f'{
+                        self.post_model.__name__
+                    } not found'
+                },
+                status=status.HTTP_404_NOT_FOUND
             )
 
-            data, ok = await serializer.create_or_update()
-            if ok:
+    async def delete(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        post = self.post_model.objects.filter(
+            id=kwargs.pop('id')
+        )
+        if await post.aexists():
+            if request.user.id == await post.values_list(
+                    'publisher_id', flat=True
+            ).afirst() or request.user.is_staff:
+                await post.adelete()
                 return Response(
                     data={},
                     status=status.HTTP_200_OK
                 )
             return Response(
-                data=data,
-                status=status.HTTP_400_BAD_REQUEST
+                data={
+                    'detail': f'Only owner or admin can delete {
+                        self.post_model.__name__.lower()
+                    }'
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
-
         return Response(
             data={
-                'detail': 'Authentication credentials where not provided'
+                'detail': f'{
+                    self.post_model.__name__
+                } not found'
             },
-            status=status.HTTP_403_FORBIDDEN
+            status=status.HTTP_404_NOT_FOUND
         )
 
+
+class PostEditAPIView(PostEditAPIViewMixin):
+    edit_serializer = PostEditSerializer
+
+
+class PostAPIView(AsyncAPIView):
     async def get(
             self,
             request,
@@ -178,7 +266,7 @@ class PostAPIView(AsyncAPIView):
                 ).data,
                 status=status.HTTP_200_OK
             )
-        except Category.DoesNotExist:
+        except Post.DoesNotExist:
             return Response(
                 data={
                     'detail': 'Post not found'
@@ -186,190 +274,58 @@ class PostAPIView(AsyncAPIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-    async def patch(
+    async def post(
             self,
             request,
             *args,
             **kwargs
     ):
-            try:
-                post = await Post.objects.aget(
-                    id=kwargs.pop('id')
-                )
-                if request.user.id == post.publisher_id:
-                    serializer = PostSerializer(
-                        instance=post,
-                        data=request.data,
-                        partial=True
-                    )
+        query = {}
 
-                    data, ok = await serializer.create_or_update()
-                    if ok:
-                        return Response(
-                            data={},
-                            status=status.HTTP_200_OK
-                        )
-                    return Response(
-                        data=data,
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                return Response(
-                    data={
-                        'detail': 'Only owner can update post'
-                    },
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            except Category.DoesNotExist:
-                return Response(
-                    data={
-                        'detail': 'Post not found'
-                    },
-                    status=status.HTTP_404_NOT_FOUND
-                )
+        title = request.data.get('title')
+        if title:
+            query |= {'title__icontains': title}
 
-    async def delete(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        post = Post.objects.filter(
-            id=kwargs.pop('id')
-        )
-        if await post.aexists():
-            if request.user.id == await post.values_list(
-                    'id', flat=True
-            ).afirst():
-                await post.adelete()
-                return Response(
-                    data={},
-                    status=status.HTTP_200_OK
-                )
-            return Response(
-                data={
-                    'detail': 'Only owner can delete post'
-                },
-                status=status.HTTP_403_FORBIDDEN
-            )
+        categories = request.data.get('categories')
+        if categories:
+            query |= {'categories__in': categories}
+
+        publish_time__start = request.data.get('publish_time__start')
+        if publish_time__start:
+            query |= {'publish_time__gte': publish_time__start}
+
+        publish_time__end = request.data.get('publish_time__end')
+        if publish_time__end:
+            query |= {'publish_time__lte': publish_time__end}
+
+        update_time__start = request.data.get('update_time__start')
+        if publish_time__start:
+            query |= {'update_time__gte': update_time__start}
+
+        update_time__end = request.data.get('update_time__end')
+        if update_time__end:
+            query |= {'update_time__lte': update_time__end}
+
+        publisher = request.data.get('publisher')
+        if publisher:
+            query |= {'publisher': publisher}
+
         return Response(
-            data={
-                'detail': 'Post not found'
-            },
-            status=status.HTTP_404_NOT_FOUND
-        )
-
-
-class PostListAPIView(AsyncAPIView):
-    async def get(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        return Response(
-            data=await CategoryListSerializer(
-                instance=Category.objects.filter(
-                    parent_category__isnull=True
-                ),
+            data=await PostPartialSerializer(
+                instance=Post.objects.filter(**query).distinct(),
                 many=True
             ).data,
             status=status.HTTP_200_OK
         )
 
 
-class PostSearchAPIView(AsyncAPIView):
-    async def get(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        categories = request.query_params.get('categories')
-        return Response(
-            data=await PostSerializer(
-                instance=Post.objects.filter(
-                    title__icontains=request.query_params.get('query'),
-                    **({'categories__in': categories} if categories else {})
-                ),
-                many=True
-            ).data,
-            status=status.HTTP_200_OK
-        )
+class CommentEditAPIView(PostEditAPIViewMixin):
+    edit_serializer = CommentEditSerializer
 
 
-class CommentAPIView(AsyncAPIView):
-    async def post(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def patch(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def delete(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
+class ReplyEditAPIView(PostEditAPIViewMixin):
+    edit_serializer = ReplyEditSerializer
 
 
-class ReplyAPIView(AsyncAPIView):
-    async def post(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def patch(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def delete(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-
-class ReactionAPIView(AsyncAPIView):
-    async def post(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def patch(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
-
-    async def delete(
-            self,
-            request,
-            *args,
-            **kwargs
-    ):
-        pass
+class ReactionEditAPIView(PostEditAPIViewMixin):
+    edit_serializer = ReactionEditSerializer

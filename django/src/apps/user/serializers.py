@@ -71,14 +71,6 @@ class UserLoginSerializer(AsyncModelSerializer):
 
 
 class UserPartialSerializer(AsyncModelSerializer):
-    profile_picture = AsyncSerializerMethodField(read_only=True)
-
-    async def get_profile_picture(
-            self: Self,
-            user: User
-    ):
-        return user.picture
-
     class Meta:
         model = User
         fields = (
@@ -89,9 +81,18 @@ class UserPartialSerializer(AsyncModelSerializer):
             'is_superuser'
         )
 
-
+from ..post.serializers import PostPartialSerializer
 class UserSerializer(AsyncModelSerializer):
+    posts = AsyncSerializerMethodField(read_only=True)
 
+    @staticmethod
+    async def get_posts(
+            user: User
+    ):
+        return await PostPartialSerializer(
+            instance=user.posts,
+            many=True
+        ).data
 
     class Meta:
         model = User
@@ -105,9 +106,10 @@ class UserEditSerializer(AsyncModelSerializer):
     async def edit(
             self: Self
     ) -> None | Never:
-        password = self.validated_data.pop('password')
-        if password:
-            self.instance.set_password(password)
+        if 'password' in self.validated_data:
+            self.instance.set_password(
+                self.validated_data.pop('password')
+            )
 
         await self.save()
 

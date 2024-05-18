@@ -1,7 +1,6 @@
 from rest_framework.urls import path
 from . import views
 
-
 view = views.UserAPIView.as_view()
 
 

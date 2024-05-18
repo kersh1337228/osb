@@ -1,4 +1,4 @@
-import datetime
+import os
 import unicodedata
 from typing import Self
 import django.db.models
@@ -7,6 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth import password_validation
 from django.db.models.fields.files import ImageFieldFile
+from django.dispatch import receiver
 from django.utils.crypto import salted_hmac
 from django.contrib.auth.hashers import (
     acheck_password,
@@ -87,15 +88,6 @@ class UserManager(models.Manager):
         return user
 
 
-# Function to create path for user profile pictures
-def upload_to_profile_picture(
-        instance: models.Model,
-        filename: str
-) -> str:
-    now = datetime.datetime.now().strftime('%Y/%m/%d')
-    return f'{instance.id}/images/profile_pictures/{now}/{filename}'
-
-
 class User(models.Model):
     objects = UserManager()
 
@@ -163,7 +155,6 @@ class User(models.Model):
     )
     sex = models.CharField(
         verbose_name='Sex',
-        max_length=7,
         null=True,
         blank=True,
         choices=[
@@ -177,7 +168,7 @@ class User(models.Model):
         blank=True,
     )
     profile_picture = models.ImageField(
-        upload_to=upload_to_profile_picture,
+        upload_to=lambda user, filename: f'user/{user.id}/{filename}',
         null=True,
         blank=True,
         default=None
@@ -190,7 +181,7 @@ class User(models.Model):
     )
     about = models.TextField(
         verbose_name='About me',
-        max_length=32767,
+        max_length=511,
         null=True,
         blank=True,
         default=None
@@ -274,7 +265,8 @@ class User(models.Model):
     def picture(
             self: Self
     ) -> ImageFieldFile | None:
-        return self.profile_picture.path if self.is_public else None
+        if self.profile_picture and self.is_public:
+            return self.profile_picture.path
 
     @property
     def posts(
@@ -406,3 +398,50 @@ class User(models.Model):
             'username',
             'email'
         )
+
+
+@receiver(
+    models.signals.post_delete,
+    sender=User
+)
+def auto_delete_file_on_delete(
+        signal,
+        sender,
+        **kwargs
+):
+    user: User = kwargs.get('instance')
+
+    if (
+        user.profile_picture
+        and os.path.isfile(user.profile_picture.path)
+    ):
+        os.remove(user.profile_picture.path)
+
+
+@receiver(
+    models.signals.pre_save,
+    sender=User
+)
+async def auto_delete_file_on_change(
+        signal,
+        sender,
+        **kwargs
+):
+    user: User = kwargs.get('instance')
+
+    if not user.id:
+        return False
+
+    try:
+        old_file = (await User.objects.aget(
+            id=user.id
+        )).profile_picture
+    except User.DoesNotExist:
+        return False
+
+    if (
+        old_file
+        and not old_file == user.profile_picture
+        and os.path.isfile(old_file.path)
+    ):
+        os.remove(old_file.path)

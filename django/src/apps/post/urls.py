@@ -4,108 +4,103 @@ from . import views
 
 urlpatterns = (
     # category
-    path( # post
+    path(  # post
         'category/create',
         views.CategoryAPIView.as_view(),
         name='category_create'
     ),
-    path( # patch
+    path(  # patch
         'category/update/<int:id>',
         views.CategoryAPIView.as_view(),
         name='category_update'
     ),
-    path( # delete
+    path(  # delete
         'category/delete/<int:id>',
         views.CategoryAPIView.as_view(),
         name='category_delete'
     ),
-    path( # get
+    path(  # get
         'category/list',
         views.CategoryListAPIView.as_view(),
         name='category_list'
     ),
-    path( # get
+    path(  # post
         'category/search',
-        views.CategorySearchAPIView.as_view(),
+        views.CategoryListAPIView.as_view(),
         name='category_search'
     ),
     # post
-    path(
+    path(  # post
         'create',
-        views.PostAPIView.as_view(),
+        views.PostEditAPIView.as_view(),
         name='post_create'
     ),
-    path(
+    path(  # patch
+        'update/<int:id>',
+        views.PostEditAPIView.as_view(),
+        name='post_update'
+    ),
+    path(  # delete
+        'delete/<int:id>',
+        views.PostEditAPIView.as_view(),
+        name='post_delete'
+    ),
+    path(  # get
         '<int:id>',
         views.PostAPIView.as_view(),
         name='post_read'
     ),
-    path(
-        'update/<int:id>',
-        views.PostAPIView.as_view(),
-        name='post_update'
-    ),
-    path(
-        'delete/<int:id>',
-        views.PostAPIView.as_view(),
-        name='post_delete'
-    ),
-    path(
+    path(  # post
         'list',
-        views.PostListAPIView.as_view(),
-        name='post_list'
-    ),
-    path(
-        'search',
-        views.PostSearchAPIView.as_view(),
+        views.PostAPIView.as_view(),
         name='post_list'
     ),
     # comment
-    path(
+    path(  # post
         'comment/create',
-        views.PostAPIView.as_view(),
+        views.CommentEditAPIView.as_view(),
         name='comment_create'
     ),
-    path(
+    path(  # patch
         'comment/update/<int:id>',
-        views.PostAPIView.as_view(),
+        views.CommentEditAPIView.as_view(),
         name='comment_update'
     ),
-    path(
+    path(  # delete
         'comment/delete/<int:id>',
-        views.PostAPIView.as_view(),
+        views.CommentEditAPIView.as_view(),
         name='comment_delete'
     ),
     # reply
-    path(
+    path(  # post
         'reply/create',
-        views.PostAPIView.as_view(),
+        views.ReplyEditAPIView.as_view(),
         name='reply_create'
     ),
-    path(
+    path(  # patch
         'reply/update/<int:id>',
-        views.PostAPIView.as_view(),
+        views.ReplyEditAPIView.as_view(),
         name='reply_update'
     ),
-    path(
+    path(  # delete
         'reply/delete/<int:id>',
-        views.PostAPIView.as_view(),
+        views.ReplyEditAPIView.as_view(),
         name='reply_delete'
     ),
     # reaction
-    path(
+    path(  # post
         'reaction/create',
-        views.PostAPIView.as_view(),
+        views.ReactionEditAPIView.as_view(),
         name='reaction_create'
     ),
-    path(
+    path(  # patch
         'reaction/update/<int:id>',
-        views.PostAPIView.as_view(),
+        views.ReactionEditAPIView.as_view(),
         name='reaction_update'
     ),
-    path(
+    path(  # delete
         'reaction/delete/<int:id>',
-        views.PostAPIView.as_view(),
+        views.ReactionEditAPIView.as_view(),
         name='reaction_delete'
     )
 )

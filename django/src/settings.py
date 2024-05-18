@@ -9,6 +9,7 @@ DEBUG = bool(os.environ.get('DEBUG', 1))
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGINS_ALLOW_ALL = True
+CSRF_COOKIE_HTTPONLY = True
 
 
 INSTALLED_APPS = [
@@ -92,10 +93,12 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'src/static/'
-STATIC_ROOT = '/var/www/static'
-MEDIA_URL = 'src/media/'
-MEDIA_ROOT = '/var/www/media'
+STATIC_URL = '/static/'
+# STATIC_ROOT = '/var/www/static' # TODO prod
+STATIC_ROOT = '/home/kersh/dev/python/osb/next/public/static'
+MEDIA_URL = '/media/'
+# MEDIA_ROOT = '/var/www/media'
+MEDIA_ROOT = '/home/kersh/dev/python/osb/next/public/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

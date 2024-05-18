@@ -12,7 +12,7 @@ from django.contrib.auth import alogin, alogout
 from rest_framework.response import Response
 from rest_framework import (
     status,
-    permissions
+    permissions, parsers
 )
 
 
@@ -105,7 +105,8 @@ class UserLogoutView(AsyncAPIView):
 
 
 class UserAPIView(AsyncAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = (parsers.JSONParser, parsers.MultiPartParser)
 
     async def get(
             self,
