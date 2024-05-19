@@ -103,7 +103,7 @@
 .comments {
     color: black;
     font-size: 10pt;
-    opacity: 0.6;
+    opacity: 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;

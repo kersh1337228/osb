@@ -281,8 +281,11 @@ export default function User(
                     Posts
                 </h1>
                 <ul>
-                    {user.posts.map((post, key) =>
-                        <PostListItem post={post} key={key}/>
+                    {user.posts.map(post =>
+                        <PostListItem
+                            post={post}
+                            key={post.id}
+                        />
                     )}
                 </ul>
             </section>

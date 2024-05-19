@@ -1,3 +1,5 @@
+'use client';
+
 import {
     createRef,
     RefObject,
@@ -31,7 +33,9 @@ export default function TextField(
             new Event('input', { bubbles: true }));
     }, []);
 
-    return <div>
+    return <div
+        className={styles.field}
+    >
         {
             label ? <label
                 htmlFor={name}

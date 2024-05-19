@@ -8,9 +8,11 @@ import Publisher from '../../user/publisher/Publisher';
 
 export default function Comment(
     {
-        comment
+        comment,
+        commented_post
     }: {
         comment: PostComment;
+        commented_post: number;
     }
 ) {
     return <li
@@ -49,10 +51,14 @@ export default function Comment(
             reacted_to={comment.id}
         />
         <ul>
-            {comment.replies.map((reply, key) =>
+            {comment.replies.map(reply =>
                 <Reply
-                    key={key}
+                    key={reply.id}
                     reply={reply}
+                    onDelete={() => {
+                        // setReplies(replies => replies.filter(
+                        //     reply => reply.id !== reply_.id));
+                    }}
                 />
             )}
         </ul>

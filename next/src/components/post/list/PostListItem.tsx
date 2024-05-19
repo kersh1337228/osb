@@ -63,7 +63,7 @@ export default function PostListItem(
         >
             {post.categories.map((category, key) =>
                 <li
-                    key={key}
+                    key={category.id}
                 >
                     <Link
                         href={`/post/category/${category.id}`}
@@ -86,11 +86,11 @@ export default function PostListItem(
                 <span
                     className={styles.postNegative}
                 >
-                    - {post.rating.neg}
+                    - {post.reactions.neg.length}
                 </span> / <span
                     className={styles.postPositive}
                 >
-                    + {post.rating.pos}
+                    + {post.reactions.pos.length}
                 </span>
             </div>
             <Link

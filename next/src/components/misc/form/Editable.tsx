@@ -11,6 +11,7 @@ import CancelIcon from '../../misc/icons/Cancel';
 import CharField from './CharField';
 import TextField from './TextField';
 import styles from './styles.module.css';
+import DeleteIcon from '../icons/Delete';
 
 export default function Editable(
     {
@@ -20,10 +21,12 @@ export default function Editable(
         type,
         placeholder,
         children,
-        component = CharField
+        component = CharField,
+        onDelete
     }: {
         value: any;
         setValue: (value: any) => Promise<JSONResponse>;
+        onDelete?: () => Promise<void>;
         name: string;
         type:  HTMLInputTypeAttribute;
         component?: typeof CharField | typeof TextField;
@@ -31,6 +34,10 @@ export default function Editable(
         children: React.ReactNode;
     }
 ) {
+    onDelete = onDelete ?? (async () => {
+        await setValue(null);
+    });
+
     const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
     const [edit, setEdit] = useState(false);
     const [errors, setErrors] = useState(new Array<string>());
@@ -69,5 +76,8 @@ export default function Editable(
                 setEdit(true);
             }}
         />
+        {value ? <DeleteIcon
+            onClick={onDelete}
+        /> : null}
     </div>;
 }

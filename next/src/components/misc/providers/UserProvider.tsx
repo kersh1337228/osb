@@ -1,6 +1,6 @@
 'use client';
 
-import {
+import React, {
     createContext
 } from 'react';
 
@@ -11,7 +11,7 @@ export default function UserProvider(
         user,
         children
     }: {
-        user: UserPartial;
+        user: UserPartial | null;
         children: React.ReactNode;
     }
 ) {

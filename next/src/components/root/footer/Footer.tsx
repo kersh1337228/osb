@@ -1,5 +1,3 @@
-'use server';
-
 import GithubIcon from '../../misc/icons/Github';
 import GitlabIcon from '../../misc/icons/Gitlab';
 import PlanetIcon from '../../misc/icons/Planet';
@@ -47,6 +45,7 @@ export default async function Footer() {
             >
                 {categories.map((category, key) =>
                     <li
+                        // key={category.id}
                         key={key}
                         className={styles.listItem}
                     >
@@ -58,6 +57,7 @@ export default async function Footer() {
                         >
                             {category.children.map((category, key) =>
                                 <li
+                                    // key={category.id}
                                     key={key}
                                     className={styles.sublistItem}
                                 >

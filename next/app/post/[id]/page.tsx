@@ -1,5 +1,3 @@
-'use server';
-
 import {
     serverRequest
 } from '../../../src/actions/request';

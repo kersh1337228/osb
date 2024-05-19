@@ -1,5 +1,3 @@
-'use server';
-
 export default async function About() {
     return <main>
         <section className="about-section light">

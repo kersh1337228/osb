@@ -18,13 +18,16 @@ declare interface RegisterCredentials extends LoginCredentials {
     email: string;
 }
 
-declare type UserPartial = {
+declare type Model = {
     id: number;
+};
+
+declare interface UserPartial extends Model {
     username: string;
     profile_picture: string | null;
     is_public: boolean;
     is_superuser: boolean;
-};
+}
 
 declare interface User extends UserPartial {
     email: string;
@@ -38,67 +41,46 @@ declare interface User extends UserPartial {
     posts: PostPartial[];
 }
 
-declare type CategoryPartial = {
-    id: number;
+declare interface CategoryPartial extends Model {
     title: string;
-};
+}
 
-declare type Category = {
-    id: number;
-    title: string;
+declare interface Category extends CategoryPartial {
     children: Category[];
-};
+}
 
-declare type PostPartial = {
+declare interface PostMixin extends Model {
+    content: string;
+    publisher: UserPartial;
+    reactions: {
+        neg: Reaction[];
+        pos: Reaction[];
+    };
+    publish_time: string;
+    update_time: string;
+}
+
+declare interface PostPartial extends PostMixin {
     id: number;
     title: string;
     categories: {
         id: number;
         title: string;
     }[];
-    content: string;
-    publisher: UserPartial;
-    reactions: {
-        neg: Reaction[];
-        pos: Reaction[];
-    };
     comments: number;
-    publish_time: string;
-    update_time: string;
-};
+}
 
 declare interface Post extends PostPartial {
     comments: PostComment[];
 }
 
-declare type Reaction = {
-    id: number;
+declare interface Reaction extends Model {
     type: boolean;
     publisher: UserPartial;
-};
+}
 
-declare type PostComment = {
-    id: number;
-    publisher: UserPartial;
-    reactions: {
-        neg: Reaction[];
-        pos: Reaction[];
-    };
+declare interface PostComment extends PostMixin {
     replies: Reply[];
-    content: string;
-    publish_time: string;
-    update_time: string;
-};
+}
 
-declare type Reply = {
-    id: number;
-    publisher: UserPartial;
-    reactions: {
-        neg: Reaction[];
-        pos: Reaction[];
-    };
-    replies: Reply[];
-    content: string;
-    publish_time: string;
-    update_time: string;
-};
+declare type Reply = PostComment;

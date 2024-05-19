@@ -156,9 +156,9 @@ export default function Reactions(
         {negVisible && reacts.neg.length ? <ul
             className={styles.publishers}
         >
-            {reacts.neg.map((react, key) =>
+            {reacts.neg.map(react =>
                 <li
-                    key={key}
+                    key={react.id}
                     className={styles.publisher}
                 >
                     <Publisher
@@ -183,9 +183,9 @@ export default function Reactions(
         {posVisible && reacts.pos.length ? <ul
             className={styles.publishers}
         >
-            {reacts.pos.map((react, key) =>
+            {reacts.pos.map(react =>
                 <li
-                    key={key}
+                    key={react.id}
                     className={styles.publisher}
                 >
                     <Publisher

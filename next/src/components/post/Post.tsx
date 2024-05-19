@@ -191,17 +191,18 @@ export default function Post(
         <section
             id="comments"
             style={{
-                padding: '5% 25%'
+                padding: '5% 30%'
             }}
         >
             <h1>
                 Comments
             </h1>
             <ul>
-                {post.comments.map((comment, key) =>
+                {post.comments.map(comment =>
                     <Comment
-                        key={key}
+                        key={comment.id}
                         comment={comment}
+                        commented_post={post.id}
                     />
                 )}
             </ul>

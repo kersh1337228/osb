@@ -117,6 +117,18 @@ input, textarea {
     padding: 0;
 }
 
+/* SELECTION */
+
+::selection {
+    background: green;
+    color: white;
+}
+
+::-moz-selection {
+    background: green;
+    color: white;
+}
+
 /* SCROLLBAR */
 
 ::-webkit-scrollbar {

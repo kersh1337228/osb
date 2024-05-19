@@ -34,3 +34,23 @@ export function debounceSync(
         }, wait);
     };
 }
+
+export function ratingOrder(
+    a: PostMixin,
+    b: PostMixin
+) {
+    const aRating = a.reactions.pos.length - a.reactions.neg.length;
+    const bRating = b.reactions.pos.length - b.reactions.neg.length;
+
+    return aRating > bRating ? -1 : aRating < bRating ? 1 : 0;
+}
+
+export function timeOrder(
+    a: PostMixin,
+    b: PostMixin
+) {
+    const aTime = new Date(a.update_time);
+    const bTime = new Date(b.update_time);
+
+    return aTime > bTime ? -1 : aTime < bTime ? 1 : 0;
+}

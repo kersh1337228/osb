@@ -1,5 +1,3 @@
-'use server';
-
 import {
     serverRequest
 } from '../../../actions/request';
@@ -52,7 +50,10 @@ export default async function PostList() {
             </h1>
             <ul>
                 {posts.map((post, key) =>
-                    <PostListItem post={post} key={key}/>
+                    <PostListItem
+                        post={post}
+                        key={post.id}
+                    />
                 )}
             </ul>
         </section>

@@ -1,5 +1,6 @@
 .reactions {
     user-select: none;
+    z-index: 1;
 }
 
 .rating {

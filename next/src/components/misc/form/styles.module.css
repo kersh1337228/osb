@@ -1,15 +1,23 @@
+.field {
+    display: table;
+    width: 100%;
+}
+
 .error {
     color: red;
 }
 
 .input {
+    display: table-cell;
+    vertical-align: middle;
     padding: 4px;
     margin: 8px;
-    border: 1px solid black;
-    border-radius: 7px;
+    border: none;
+    background: #ededee;
+    border-radius: 8px;
     outline: none;
     box-sizing: border-box;
-    width: 300px;
+    width: 100%;
     font-family: "SF Pro Display", sans-serif;
     font-size: 16px;
 }
@@ -29,6 +37,11 @@ textarea.input {
 .editable input,
 .editable textarea {
     margin: 0;
+}
+
+.editable svg,
+.editableImage svg {
+    opacity: 0.5;
 }
 
 .editableImage {
@@ -76,6 +89,21 @@ textarea.input {
 .datalist option:hover {
     background-color: green;
     color: white;
+}
+
+.select {
+    padding: 4px 6px;
+    border: none;
+    background: #ededee;
+    border-radius: 32px;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 12pt;
+}
+
+.select option {
+
 }
 
 .categories {

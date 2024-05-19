@@ -136,9 +136,9 @@ export default function CategoryField(
             id="categories-match"
             ref={datalistRef}
         >
-            {matches.map((match, key) =>
+            {matches.map(match =>
                 <option
-                    key={key}
+                    key={match.id}
                     value={match.title}
                     onClick={(_) => {
                         const input = inputRef.current as HTMLInputElement;
@@ -158,9 +158,9 @@ export default function CategoryField(
         <ul
             className={styles.categories}
         >
-            {categories.map((category, key) =>
+            {categories.map(category =>
                 <li
-                    key={key}
+                    key={category.id}
                     className={styles.category}
                 >
                     <span>
