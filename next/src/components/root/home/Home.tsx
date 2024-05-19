@@ -1,4 +1,3 @@
-import Latest from '../../post/Latest';
 import styles from './styles.module.css';
 
 export default function Home(): React.ReactNode {
@@ -19,9 +18,8 @@ export default function Home(): React.ReactNode {
                 Posts about free open-source software and hardware
             </span>
         </section>
-        <Latest />
         <section
-            className="content-section light"
+            className={styles.section}
         >
             <h1
                 className={styles.sectionHeader}
@@ -32,16 +30,17 @@ export default function Home(): React.ReactNode {
                 className={styles.doubleSided}
             >
                 <p>
-                    This site was created for technical enthusiasts who love computer software and hardware.
+                    For those who love computer software and hardware.
                     Here you can find information about using free software solutions
                     instead of popular proprietary analogs,
                     writing and sharing your own free code using different programming languages
                     and configuring your machines the way you want them to work.
                 </p>
                 <p>
-                    Share and discuss your thoughts about information technologies.
-                    Subscribe to updates using RSS.
+                    Share your thoughts about information technologies.
+                    Discuss problems you face during software and hardware exploitation.
                     It is very important to continue developing, sharing, studying and running free software today.
+                    Word collocation "free software" here can be semantically replaced with "libre software".
                 </p>
             </div>
         </section>
@@ -56,7 +55,7 @@ export default function Home(): React.ReactNode {
                     Computer programming
                 </li>
                 <li>
-                    Open-source software
+                    Free open-source software
                 </li>
                 <li>
                     Unix-based operating systems

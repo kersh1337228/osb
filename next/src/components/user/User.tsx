@@ -3,7 +3,7 @@
 import {
     dateTimeFormat, HTTPRequestMethod, serverURL
 } from '../../utils/constants';
-import PostListItem from '../../../src/components/post/PostListItem';
+import PostListItem from '../post/list/PostListItem';
 import {
     Dispatch,
     useState

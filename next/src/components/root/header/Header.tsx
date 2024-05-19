@@ -6,19 +6,19 @@ import {
     usePathname
 } from 'next/navigation';
 import {
+    useContext,
     useState
 } from 'react';
 import styles from './styles.module.css';
 import MenuIcon from '../../misc/icons/Menu';
+import {
+    UserContext
+} from '../../misc/providers/UserProvider';
 
 
-export default function Header(
-    {
-        user
-    }: {
-        user: UserPartial | null
-    }
-) {
+export default function Header() {
+    const user = useContext(UserContext);
+
     const path = usePathname();
     const menu = [
         {
@@ -34,7 +34,7 @@ export default function Header(
             href: user ? `/user/${user.id}` : '/auth/login',
             icon: <UserIcon/>
         }
-    ] as NavElement[];
+    ];
 
     const [active, setActive] = useState(false);
 

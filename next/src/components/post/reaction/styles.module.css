@@ -1,0 +1,38 @@
+.reactions {
+    user-select: none;
+}
+
+.rating {
+    cursor: pointer;
+}
+
+.negative .rating {
+    color: red;
+}
+
+.positive .rating {
+    color: green;
+}
+
+.negative ul {
+    border: 1px solid red;
+}
+
+.positive ul {
+    border: 1px solid green;
+}
+
+.publishers {
+    overflow-y: scroll;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: #ededee;
+    position: absolute;
+    max-width: 256px;
+    max-height: 128px;
+}
+
+.publisher {
+    margin: 8px 0;
+}

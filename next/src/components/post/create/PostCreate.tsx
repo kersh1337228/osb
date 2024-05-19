@@ -18,7 +18,7 @@ import CategoryField from '../../misc/form/CategoryField';
 import TextField from '../../misc/form/TextField';
 import styles from './styles.module.css';
 
-export default async function CreatePost() {
+export default async function PostCreate() {
     const [categories, setCategories] = useState(new Array<CategoryPartial>());
 
     async function submit(

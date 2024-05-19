@@ -1,7 +1,7 @@
 'use server';
 
-import CreatePost from '../../../src/components/post/create/CreatePost';
+import PostCreate from '../../../src/components/post/create/PostCreate';
 
 export default async function Page() {
-    return <CreatePost />;
+    return <PostCreate />;
 }

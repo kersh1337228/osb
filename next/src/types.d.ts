@@ -58,16 +58,47 @@ declare type PostPartial = {
     }[];
     content: string;
     publisher: UserPartial;
-    rating: {
-        neg: number;
-        pos: number;
+    reactions: {
+        neg: Reaction[];
+        pos: Reaction[];
     };
+    comments: number;
     publish_time: string;
     update_time: string;
 };
 
-declare type NavElement = {
-    name: string;
-    href: string;
-    icon: React.ReactNode;
+declare interface Post extends PostPartial {
+    comments: PostComment[];
+}
+
+declare type Reaction = {
+    id: number;
+    type: boolean;
+    publisher: UserPartial;
+};
+
+declare type PostComment = {
+    id: number;
+    publisher: UserPartial;
+    reactions: {
+        neg: Reaction[];
+        pos: Reaction[];
+    };
+    replies: Reply[];
+    content: string;
+    publish_time: string;
+    update_time: string;
+};
+
+declare type Reply = {
+    id: number;
+    publisher: UserPartial;
+    reactions: {
+        neg: Reaction[];
+        pos: Reaction[];
+    };
+    replies: Reply[];
+    content: string;
+    publish_time: string;
+    update_time: string;
 };

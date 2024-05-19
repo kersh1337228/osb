@@ -4,6 +4,7 @@ import {
     authenticate
 } from '../src/actions/auth';
 import './global.css';
+import UserProvider from '../src/components/misc/providers/UserProvider';
 
 export default async function RootLayout(
     {
@@ -17,9 +18,13 @@ export default async function RootLayout(
     return (
         <html lang='en'>
             <body>
-                <Header user={user} />
-                {children}
-                <Footer />
+                <UserProvider
+                    user={user}
+                >
+                    <Header />
+                    {children}
+                    <Footer />
+                </UserProvider>
             </body>
         </html>
     );

@@ -1,9 +1,10 @@
 import {
     dateTimeFormat
-} from '../../utils/constants';
+} from '../../../utils/constants';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './styles.module.css';
+import CommentIcon from '../../misc/icons/Comment';
 
 export default function PostListItem(
     {
@@ -78,16 +79,26 @@ export default function PostListItem(
         >
             {post.content}...
         </p>
-        <div>
-            <span
-                className={styles.postNegative}
+        <div
+            className={styles.postMeta}
+        >
+            <div>
+                <span
+                    className={styles.postNegative}
+                >
+                    - {post.rating.neg}
+                </span> / <span
+                    className={styles.postPositive}
+                >
+                    + {post.rating.pos}
+                </span>
+            </div>
+            <Link
+                href={`/post/${post.id}#comments`}
+                className={styles.comments}
             >
-                - {post.rating.neg}
-            </span> / <span
-                className={styles.postPositive}
-            >
-                + {post.rating.pos}
-            </span>
+                <CommentIcon /> {post.comments}
+            </Link>
         </div>
     </li>;
 }

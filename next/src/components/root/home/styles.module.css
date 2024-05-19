@@ -3,14 +3,14 @@
     background: white;
 }
 
-.page-content {
-    background: #f6f6f0;
-    color: #000000;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    max-width: 100%;
-    flex: 1 0 auto;
+.section {
+    padding: 5% 10%;
+}
+
+.welcome {
+    padding: 5% 10%;
+    color: white;
+    background: url('/img/background.jpg');
 }
 
 .sectionHeader {
@@ -31,11 +31,6 @@
 
 .section-row-list-item {
     padding: 16px;
-}
-
-.welcome {
-    color: white;
-    background: url('/img/background.jpg');
 }
 
 .content-section {
@@ -62,6 +57,7 @@
 }
 
 .topics {
+    padding: 5% 10%;
     color: black;
 }
 
