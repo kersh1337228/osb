@@ -1,7 +1,14 @@
+from typing import (
+    Self,
+    Never
+)
+from asgiref.sync import sync_to_async
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from src.async_api.serializers import (
     AsyncModelSerializer,
-    AsyncSerializerMethodField
+    AsyncSerializerMethodField,
+    validated_method
 )
 from .models import (
     Category,
@@ -66,13 +73,34 @@ class ReactionSerializer(AsyncModelSerializer):
 
 
 class ReactionEditSerializer(AsyncModelSerializer):
+    @validated_method
+    async def create_or_update(
+            self: Self
+    ) -> None | Never:
+        if not self.instance and self.validated_data.get('publisher').id == (
+                await sync_to_async(lambda post: post.publisher)(
+                    self.validated_data.get('reacted_to')
+                )
+        ).id:
+            raise ValidationError(detail={
+                'publisher': (
+                    "Owner can't comment his own post",
+                ),
+                'reacted_to': (
+                    "Post can't be commented by owner",
+                )
+            })
+
+        return await self.save()
+
     class Meta:
         model = Reaction
         fields = '__all__'
 
 
 # _______________________________|POST|_______________________________
-class PostPartialSerializerMixin(AsyncModelSerializer):
+class PostSerializerMixin(AsyncModelSerializer):
+    reactions = AsyncSerializerMethodField(read_only=True)
     publisher = AsyncSerializerMethodField()
 
     def __new__(
@@ -98,34 +126,27 @@ class PostPartialSerializerMixin(AsyncModelSerializer):
             )
         ).data
 
-
-class PostSerializerMixin(PostPartialSerializerMixin):
-    reactions = AsyncSerializerMethodField(read_only=True)
-
     @staticmethod
     async def get_reactions(
             post: PostMixin
     ):
-        return await ReactionSerializer(
-            instance=post.reactions,
-            many=True
-        ).data
-
-
-class PostPartialSerializer(PostPartialSerializerMixin):
-    rating = AsyncSerializerMethodField(read_only=True)
-    content = serializers.SerializerMethodField()
-    categories = AsyncSerializerMethodField()
-
-    @staticmethod
-    async def get_rating(
-            post: PostMixin
-    ):
-        rating = await post.rating
+        reactions = post.reactions
         return {
-            'neg': rating[0],
-            'pos': rating[1]
+            'neg': await ReactionSerializer(
+                instance=reactions.filter(type=False),
+                many=True
+            ).data,
+            'pos': await ReactionSerializer(
+                instance=reactions.filter(type=True),
+                many=True
+            ).data
         }
+
+
+class PostPartialSerializer(PostSerializerMixin):
+    categories = AsyncSerializerMethodField(read_only=True)
+    content = serializers.SerializerMethodField(read_only=True)
+    comments = AsyncSerializerMethodField(read_only=True)
 
     @staticmethod
     def get_content(
@@ -142,12 +163,18 @@ class PostPartialSerializer(PostPartialSerializerMixin):
             'title'
         )
 
+    @staticmethod
+    async def get_comments(
+            post: Post
+    ):
+        return await post.comments.acount()
+
     class Meta:
         model = Post
         fields = '__all__'
 
 
-class PostSerializer(PostSerializerMixin, PostPartialSerializer):
+class PostSerializer(PostPartialSerializer):
     comments = AsyncSerializerMethodField(read_only=True)
 
     @staticmethod
@@ -186,7 +213,7 @@ class CommentSerializerMixin(PostSerializerMixin):
 class CommentSerializer(CommentSerializerMixin):
     class Meta:
         model = Comment
-        fields = '__all__'
+        exclude = ('commented_post',)
 
 
 class CommentEditSerializer(AsyncModelSerializer):

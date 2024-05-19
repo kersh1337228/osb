@@ -10,7 +10,10 @@ from src.apps.post.serializers import (
     PostPartialSerializer,
     CommentEditSerializer,
     ReplyEditSerializer,
-    ReactionEditSerializer
+    ReactionEditSerializer,
+    CommentSerializer,
+    ReplySerializer,
+    ReactionSerializer
 )
 from src.async_api.class_based import AsyncAPIView
 from rest_framework.response import Response
@@ -136,6 +139,7 @@ class CategoryListAPIView(AsyncAPIView):
 
 class PostEditAPIViewMixin(AsyncAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    serializer = None
     edit_serializer = None
 
     @property
@@ -157,7 +161,9 @@ class PostEditAPIViewMixin(AsyncAPIView):
         data, ok = await serializer.create_or_update()
         if ok:
             return Response(
-                data={},
+                data=await self.serializer(
+                    instance=data
+                ).data,
                 status=status.HTTP_200_OK
             )
         return Response(
@@ -185,7 +191,9 @@ class PostEditAPIViewMixin(AsyncAPIView):
                 data, ok = await serializer.create_or_update()
                 if ok:
                     return Response(
-                        data={},
+                        data=await self.serializer(
+                            instance=data
+                        ).data,
                         status=status.HTTP_200_OK
                     )
                 return Response(
@@ -247,6 +255,7 @@ class PostEditAPIViewMixin(AsyncAPIView):
 
 
 class PostEditAPIView(PostEditAPIViewMixin):
+    serializer = PostSerializer
     edit_serializer = PostEditSerializer
 
 
@@ -320,12 +329,15 @@ class PostAPIView(AsyncAPIView):
 
 
 class CommentEditAPIView(PostEditAPIViewMixin):
+    serializer = CommentSerializer
     edit_serializer = CommentEditSerializer
 
 
 class ReplyEditAPIView(PostEditAPIViewMixin):
+    serializer = ReplySerializer
     edit_serializer = ReplyEditSerializer
 
 
 class ReactionEditAPIView(PostEditAPIViewMixin):
+    serializer = ReactionSerializer
     edit_serializer = ReactionEditSerializer

@@ -76,29 +76,20 @@ class PostMixin(models.Model):
             'publisher'
         )
 
-    @property
-    async def rating(
-            self: Self
-    ) -> tuple[int, int]:
-        PostMixin.objects.annotate()
-
-        reactions = Reaction.objects.filter(
-            reacted_to=self
-        ).values_list(
-            'type',
-            flat=True
-        )
-        pos = sum(await sync_to_async(reactions.__iter__)())
-        neg = await reactions.acount() - pos
-        return neg, pos
-
     @staticmethod
     async def rating_order(
             posts: models.QuerySet
     ):
         temp = []
         async for post in posts:
-            neg, pos = await post.rating
+            reactions = Reaction.objects.filter(
+                reacted_to=post
+            ).values_list(
+                'type',
+                flat=True
+            )
+            pos = sum(await sync_to_async(reactions.__iter__)())
+            neg = await reactions.acount() - pos
             temp.append((pos - neg, post))
         temp.sort(key=lambda pair: pair[0], reverse=True)
 

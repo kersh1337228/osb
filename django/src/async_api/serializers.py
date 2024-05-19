@@ -35,7 +35,7 @@ def validated_method(
         ]
 ) -> Callable[
     ['AsyncModelSerializer'],
-    Coroutine[Any, Any, tuple[dict, bool]]
+    Coroutine[Any, Any, tuple[Any, bool]]
 ]:
     async def wrapped(
             self: 'AsyncModelSerializer'
@@ -345,4 +345,4 @@ class AsyncModelSerializer(ModelSerializer):
     async def create_or_update(
             self: Self
     ) -> None | Never:
-        await self.save()
+        return await self.save()
