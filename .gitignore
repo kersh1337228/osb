@@ -3,7 +3,6 @@
 
 /django/venv/
 /django/**/__pycache__/
-**/migrations/
 **.sqlite3
 
 /next/node_modules/
