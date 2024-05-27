@@ -4,10 +4,10 @@ import React, {
     useRef,
     useState
 } from 'react';
-import EditIcon from '../../misc/icons/Edit';
-import OKIcon from '../../misc/icons/OK';
-import CancelIcon from '../../misc/icons/Cancel';
-import CharField from './CharField';
+import EditIcon from '../icons/Edit';
+import OKIcon from '../icons/OK';
+import CancelIcon from '../icons/Cancel';
+import CharField from '../form/CharField';
 import DeleteIcon from '../icons/Delete';
 import styles from './styles.module.css';
 
@@ -31,7 +31,7 @@ export default function EditableImage(
     const [errors, setErrors] = useState(new Array<string>());
 
     return edit ? <div
-            className={styles.editableImage}
+            className={styles.editableCol}
         >
             {children}
             <div
@@ -45,25 +45,29 @@ export default function EditableImage(
                     inputRef={inputRef}
                     errors={errors}
                 />
-                <OKIcon onClick={async (_) => {
-                    const image = inputRef.current?.files?.item(0);
-                    if (image) {
-                        const response = await setValue(image);
-                        if (!response.ok && name in response.data)
-                            setErrors(response.data[name]);
-                        else
-                            setEdit(false);
-                    } else
-                        setErrors(['No image attached']);
+                <span
+                    className={styles.row}
+                >
+                    <OKIcon onClick={async (_) => {
+                        const image = inputRef.current?.files?.item(0);
+                        if (image) {
+                            const response = await setValue(image);
+                            if (!response.ok && name in response.data)
+                                setErrors(response.data[name]);
+                            else
+                                setEdit(false);
+                        } else
+                            setErrors(['No image attached']);
 
-                }}/>
-                <CancelIcon onClick={(_) => {
-                    setEdit(false);
-                }}/>
+                    }}/>
+                    <CancelIcon onClick={(_) => {
+                        setEdit(false);
+                    }}/>
+                </span>
             </div>
         </div>
         : <div
-            className={styles.editableImage}
+            className={styles.editableCol}
         >
             {children}
             <div
@@ -74,9 +78,10 @@ export default function EditableImage(
                         setEdit(true);
                     }}
                 />
-                {value ? <DeleteIcon onClick={async (_) => {
+                {value ? <DeleteIcon onDoubleClick={async (_) => {
                     await setValue(null);
                 }}/> : null}
             </div>
-        </div>;
+        </div>
+;
 }

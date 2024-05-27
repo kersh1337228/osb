@@ -1,6 +1,23 @@
 import styles from './styles.module.css';
+import {
+    serverRequest
+} from '../../../utils/actions';
+import {
+    HTTPRequestMethod,
+    serverURL
+} from '../../../utils/constants';
+import Link from 'next/link';
 
-export default function Home(): React.ReactNode {
+export default async function Home() {
+    const popular_categories = (await serverRequest(
+        `${serverURL}/post/category`,
+        HTTPRequestMethod.GET, {
+            cache: 'force-cache'
+        }, {
+            limit: 5
+        }
+    )).data as CategoryPartial[];
+
     return <main
         className={styles.home}
     >
@@ -30,7 +47,7 @@ export default function Home(): React.ReactNode {
                 className={styles.doubleSided}
             >
                 <p>
-                    For those who love computer software and hardware.
+                    For those who like computer software and hardware.
                     Here you can find information about using free software solutions
                     instead of popular proprietary analogs,
                     writing and sharing your own free code using different programming languages
@@ -39,30 +56,37 @@ export default function Home(): React.ReactNode {
                 <p>
                     Share your thoughts about information technologies.
                     Discuss problems you face during software and hardware exploitation.
-                    It is very important to continue developing, sharing, studying and running free software today.
+                    Use free open-source solutions and enjoy.
                     Word collocation "free software" here can be semantically replaced with "libre software".
                 </p>
             </div>
         </section>
         <section
-            className={styles.topics}
+            className={styles.section}
         >
-            <h1 className={styles.sectionHeader}>
-                Topic examples
+            <h1
+                className={styles.sectionHeader}
+            >
+                Popular categories
             </h1>
-            <ul className="itemize large">
-                <li>
-                    Computer programming
-                </li>
-                <li>
-                    Free open-source software
-                </li>
-                <li>
-                    Unix-based operating systems
-                </li>
-                <li>
-                    Computer hardware
-                </li>
+            <ul
+                className={styles.categories}
+            >
+                {popular_categories.map(category => {
+                    const params = new URLSearchParams();
+                    params.set('categories', JSON.stringify([category]));
+
+                    return <li
+                        key={category.id}
+                    >
+                        <Link
+                            href={`/post?${params.toString()}`}
+                            className={styles.category}
+                        >
+                            {category.title}
+                        </Link>
+                    </li>;
+                })}
             </ul>
         </section>
     </main>;

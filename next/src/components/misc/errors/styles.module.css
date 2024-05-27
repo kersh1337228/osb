@@ -1,0 +1,11 @@
+.error {
+    font-size: 36pt;
+    color: red;
+    text-align: center;
+    margin-top: 15%;
+}
+
+.error::selection {
+    background: red;
+    color: white;
+}

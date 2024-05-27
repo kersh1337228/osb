@@ -2,11 +2,11 @@
 
 import {
     serverRequest
-} from './request';
+} from '../../../utils/actions';
 import {
     HTTPRequestMethod,
     serverURL
-} from '../utils/constants';
+} from '../../../utils/constants';
 import {
     redirect
 } from 'next/navigation';
@@ -16,8 +16,9 @@ export async function register(
 ) {
     const response = await serverRequest(
         `${serverURL}/user/register`,
-        HTTPRequestMethod.POST,
-        { cache: 'no-store' },
+        HTTPRequestMethod.POST, {
+            cache: 'no-store'
+        },
         credentials
     );
 
@@ -32,9 +33,9 @@ export async function login(
 ) {
     const response = await serverRequest(
         `${serverURL}/user/login`,
-        HTTPRequestMethod.POST,
-        { cache: 'no-store' },
-        credentials
+        HTTPRequestMethod.POST, {
+            cache: 'no-store'
+        }, credentials
     );
 
     if (response.ok && 'id' in response.data)
@@ -43,15 +44,44 @@ export async function login(
     return response.data;
 }
 
+export async function logout() {
+    const response = await serverRequest(
+        `${serverURL}/user/logout`,
+        HTTPRequestMethod.POST, {
+            cache: 'no-store'
+        }
+    );
+
+    if (response.ok)
+        redirect('/user/login');
+}
+
 export async function authenticate(): Promise<UserPartial | null> {
     const response = await serverRequest(
         `${serverURL}/user/authenticate`,
-        HTTPRequestMethod.GET,
-        { cache: 'force-cache' }
+        HTTPRequestMethod.GET, {
+            cache: 'force-cache'
+        }
     );
 
     if (!response.ok)
         return null;
 
     return response.data as UserPartial;
+}
+
+export async function deleteUser(
+    id: number
+) {
+    const response = await serverRequest(
+        `${serverURL}/user/delete/${id}`,
+        HTTPRequestMethod.DELETE, {
+            cache: 'no-store'
+        }
+    );
+
+    if (response.ok)
+        redirect('/user/login');
+
+    return response.data;
 }

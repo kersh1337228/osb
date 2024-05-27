@@ -1,7 +1,10 @@
 'use client';
 
 import {
-    dateTimeFormat, HTTPRequestMethod, serverURL
+    dateTimeFormat,
+    HTTPRequestMethod,
+    orders,
+    serverURL
 } from '../../../utils/constants';
 import styles from './styles.module.css';
 import Reactions from '../reaction/Reactions';
@@ -10,6 +13,7 @@ import ReplyIcon from '../../misc/icons/Reply';
 import TextField from '../../misc/form/TextField';
 import {
     useContext,
+    useEffect,
     useRef,
     useState
 } from 'react';
@@ -18,16 +22,16 @@ import {
 } from 'react-dom';
 import {
     serverRequest
-} from '../../../actions/request';
+} from '../../../utils/actions';
 import {
     ratingOrder,
     timeOrder
 } from '../../../utils/functions';
-import Editable from '../../misc/form/Editable';
 import {
     UserContext
 } from '../../misc/providers/UserProvider';
 import Select from '../../misc/form/Select';
+import EditableText from '../../misc/editable/EditableText';
 
 export default function Reply(
     {
@@ -43,6 +47,7 @@ export default function Reply(
     const [replies, setReplies] = useState(reply.replies);
     const [visible, setVisible] = useState(false);
     const [content, setContent] = useState(reply.content);
+    const [order, setOrder] = useState<Order>('best');
 
     const contentRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,9 +57,9 @@ export default function Reply(
     ) => {
         const response = await serverRequest(
             `${serverURL}/post/reply/create`,
-            HTTPRequestMethod.POST,
-            { cache: 'no-store' },
-            {
+            HTTPRequestMethod.POST, {
+                cache: 'no-store'
+            }, {
                 replied_post: reply.id,
                 content: formData.get('content')
             }
@@ -73,9 +78,24 @@ export default function Reply(
             return response.data;
     }, {});
 
-    return <li
-        className={styles.reply}
-    >
+    useEffect(() => {
+        switch (order) {
+            case 'best':
+                setReplies(replies => replies.toSorted(ratingOrder));
+                break;
+            case 'new':
+                setReplies(replies => replies.toSorted(timeOrder));
+                break;
+            case 'old':
+                setReplies(replies => replies.toSorted((a, b) => -timeOrder(a, b)));
+                break;
+            case 'worst':
+                setReplies(replies => replies.toSorted((a, b) => -ratingOrder(a, b)));
+                break;
+        }
+    }, [order, replies.length]);
+
+    return <li>
         <div
             className={styles.header}
         >
@@ -99,14 +119,16 @@ export default function Reply(
                 </div>
             </div>
         </div>
-        {user && user.id === reply.publisher.id ? <Editable
+        {user && (user.id === reply.publisher.id || user.is_superuser) ? <EditableText
             value={content}
             setValue={async (content: string) => {
                 const response = await serverRequest(
                     `${serverURL}/post/reply/update/${reply.id}`,
-                    HTTPRequestMethod.PATCH,
-                    { cache: 'no-store' },
-                    { content }
+                    HTTPRequestMethod.PATCH, {
+                        cache: 'no-store'
+                    }, {
+                        content
+                    }
                 );
 
                 if (response.ok)
@@ -117,24 +139,24 @@ export default function Reply(
             onDelete={async () => {
                 const response = await serverRequest(
                     `${serverURL}/post/reply/delete/${reply.id}`,
-                    HTTPRequestMethod.DELETE,
-                    { cache: 'no-store' }
+                    HTTPRequestMethod.DELETE, {
+                        cache: 'no-store'
+                    }
                 );
 
                 if (response.ok)
                     onDelete();
             }}
             name="content"
-            type="text"
             placeholder="Reply"
-            component={TextField}
+            allowEdit={user.id === reply.publisher.id}
         >
             <p
                 className={styles.content}
             >
                 {content}
             </p>
-        </Editable> : <p
+        </EditableText> : <p
             className={styles.content}
         >
             {content}
@@ -144,91 +166,75 @@ export default function Reply(
         >
             <span
                 className={styles.repliesCount}
+                onClick={(_) => setVisible(visible => !visible)}
             >
-                <ReplyIcon
-                    onClick={(_) => setVisible(visible => !visible)}
-                /> {reply.replies.length}
-                {/*TODO: ordering using custom select*/}
-                <Select
-                    name="order"
-                    onChange={(event) => {
-                        switch (event.target.value) {
-                            case 'best':
-                                setReplies(replies => replies.toSorted(ratingOrder));
-                                break;
-                            case 'new':
-                                setReplies(replies => replies.toSorted(timeOrder));
-                                break;
-                            case 'old':
-                                setReplies(replies => replies.toSorted((a, b) => -timeOrder(a, b)));
-                                break;
-                            case 'worst':
-                                setReplies(replies => replies.toSorted((a, b) => -ratingOrder(a, b)));
-                                break;
-                        }
-                    }}
-                >
-                    <option
-                        value="best"
-                    >
-                        Best
-                    </option>
-                    <option
-                        value="new"
-                    >
-                        New
-                    </option>
-                    <option
-                        value="old"
-                    >
-                        Old
-                    </option>
-                    <option
-                        value="worst"
-                    >
-                        Worst
-                    </option>
-                </Select>
+                <ReplyIcon /> {replies.length}
             </span>
             <Reactions
-                // TODO: resort on reaction
-                reactions={reply.reactions}
-                reacted_to={reply.id}
+                post={reply}
             />
         </div>
-        {visible ? <div>
-            <form
-                action={dispatch}
-                className={styles.form}
-            >
-                <TextField
-                    name="content"
-                    placeholder="Reply"
-                    errors={formState.content}
-                    required={false}
-                    inputRef={contentRef}
-                />
-                <button
-                    className={styles.button}
-                    type="submit"
+        <div
+            className={styles.replies}
+        >
+            {visible ? <>
+                {user ? <form
+                    action={dispatch}
+                    className={styles.form}
                 >
-                    Reply
-                </button>
-            </form>
-            <ul
-                className={styles.replies}
-            >
-                {replies.map(reply_ =>
-                    <Reply
-                        key={reply_.id}
-                        reply={reply_}
-                        onDelete={() => {
-                            setReplies(replies => replies.filter(
-                                reply => reply.id !== reply_.id));
-                        }}
+                    <TextField
+                        name="content"
+                        placeholder="Reply content"
+                        errors={formState.content}
+                        required={false}
+                        inputRef={contentRef}
                     />
-                )}
-            </ul>
-        </div> : null}
+                    <button
+                        className={styles.button}
+                        type="submit"
+                    >
+                        Reply
+                    </button>
+                </form> : null}
+                {replies.length ? <>
+                    <span
+                        className={styles.repliesHeader}
+                    >
+                        <h1>
+                            Replies
+                        </h1>
+                        <span className={styles.order}>
+                            <Select
+                                name="order"
+                                onChange={(event) => setOrder(event.target.value as Order)}
+                            >
+                                {orders.map(order =>
+                                    <option
+                                        key={order.value}
+                                        value={order.value}
+                                    >
+                                        {order.name}
+                                    </option>
+                                )}
+                            </Select>
+                        </span>
+                    </span>
+                    <ul
+                        className={styles.replyList}
+                    >
+                        {replies.map(reply_ =>
+                            <Reply
+                                key={reply_.id}
+                                reply={reply_}
+                                onDelete={() => {
+                                    setReplies(replies => replies.filter(
+                                        reply => reply.id !== reply_.id));
+                                }}
+                            />
+                        )}
+                    </ul>
+                </>: null}
+            </> : null}
+        </div>
     </li>;
 }

@@ -1,4 +1,4 @@
-declare type JSONResponse = {
+type JSONResponse = {
     data: Record<string, any>;
     ok: boolean;
     status: number;
@@ -9,27 +9,27 @@ declare type JSONResponse = {
     bodyUsed: boolean;
 };
 
-declare type LoginCredentials = {
+type LoginCredentials = {
     username: string;
     password: string;
 };
 
-declare interface RegisterCredentials extends LoginCredentials {
+interface RegisterCredentials extends LoginCredentials {
     email: string;
 }
 
-declare type Model = {
+type Model = {
     id: number;
 };
 
-declare interface UserPartial extends Model {
+interface UserPartial extends Model {
     username: string;
     profile_picture: string | null;
     is_public: boolean;
     is_superuser: boolean;
 }
 
-declare interface User extends UserPartial {
+interface User extends UserPartial {
     email: string;
     last_login: string;
     first_name: string | null;
@@ -41,15 +41,17 @@ declare interface User extends UserPartial {
     posts: PostPartial[];
 }
 
-declare interface CategoryPartial extends Model {
+interface CategoryPartial extends Model {
     title: string;
 }
 
-declare interface Category extends CategoryPartial {
+interface Category extends CategoryPartial {
+    parent_category: CategoryPartial;
     children: Category[];
+    posts: number;
 }
 
-declare interface PostMixin extends Model {
+interface PostMixin extends Model {
     content: string;
     publisher: UserPartial;
     reactions: {
@@ -60,7 +62,7 @@ declare interface PostMixin extends Model {
     update_time: string;
 }
 
-declare interface PostPartial extends PostMixin {
+interface PostPartial extends PostMixin {
     id: number;
     title: string;
     categories: {
@@ -70,17 +72,19 @@ declare interface PostPartial extends PostMixin {
     comments: number;
 }
 
-declare interface Post extends PostPartial {
+interface Post extends PostPartial {
     comments: PostComment[];
 }
 
-declare interface Reaction extends Model {
+interface Reaction extends Model {
     type: boolean;
     publisher: UserPartial;
 }
 
-declare interface PostComment extends PostMixin {
+interface PostComment extends PostMixin {
     replies: Reply[];
 }
 
-declare type Reply = PostComment;
+type Reply = PostComment;
+
+type Order = 'best' | 'new' | 'old' | 'worst';

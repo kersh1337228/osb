@@ -1,11 +1,3 @@
-.userPage {
-    background: white;
-    color: black;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .userPage section {
     min-width: 800px;
     width: 50%;
@@ -21,6 +13,14 @@
     grid-column-gap: 32px;
 }
 
+.pictureWrapper {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
 .profilePicture {
     width: 256px;
     height: 256px;
@@ -32,10 +32,39 @@
     overflow-clip-margin: border-box;
 }
 
-.profileData {
-    /*background: #ebebed;*/
-    /*border-radius: 16px;*/
-    /*padding: 16px;*/
+.buttons {
+    width: 100%;
+}
+
+.button,
+.redButton {
+    width: 100%;
+    margin: 8px 0;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button {
+    background: #ededee;
+    color: green;
+}
+
+.button:hover {
+    background: green;
+    color: white;
+}
+
+.redButton {
+    background: #ededee;
+    color: red;
+}
+
+.redButton:hover {
+    background: red;
+    color: white;
 }
 
 .primary {
@@ -81,6 +110,5 @@
 }
 
 .about {
-    font-family: 'CMU Serif', serif;
     font-size: 12pt;
 }

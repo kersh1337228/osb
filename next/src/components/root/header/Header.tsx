@@ -31,18 +31,26 @@ export default function Header() {
             icon: null
         }, {
             name: 'User',
-            href: user ? `/user/${user.id}` : '/auth/login',
+            href: user ? `/user/${user.id}` : '/user/login',
             icon: <UserIcon/>
         }
     ];
 
     const [active, setActive] = useState(false);
 
-    return <header className={styles.header}>
-        <div className={styles.headerInner}>
+    return <header
+        className={styles.header}
+    >
+        <div
+            className={styles.placeholder}
+        >
+        </div>
+        <div
+            className={styles.inner}
+        >
             {path === '/' ?
                 <div
-                    className={styles.siteLogo}
+                    className={styles.logo}
                 >
                     <h1>
                         OSB
@@ -50,7 +58,7 @@ export default function Header() {
                 </div> :
                 <Link
                     href={'/'}
-                    className={styles.siteLogo}
+                    className={styles.logo}
                 >
                     <h1
                         className={styles.active}

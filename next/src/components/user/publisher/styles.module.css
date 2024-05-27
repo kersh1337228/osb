@@ -1,4 +1,4 @@
-.publisher {
+.publisher, .superuser {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -6,8 +6,17 @@
     gap: 8px;
 }
 
+.superuser {
+    color: red;
+}
+
+.superuser img {
+    border: 2px solid red;
+    overflow-clip-margin: content-box;
+}
+
 .picture {
-    border-radius: 24px;
+    border-radius: 32px;
     box-sizing: border-box;
     object-fit: cover;
     object-position: center;

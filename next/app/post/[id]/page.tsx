@@ -1,11 +1,35 @@
 import {
     serverRequest
-} from '../../../src/actions/request';
+} from '../../../src/utils/actions';
 import {
     HTTPRequestMethod,
     serverURL
 } from '../../../src/utils/constants';
-import Post from '../../../src/components/post/Post';
+import Post from '../../../src/components/post/post/Post';
+import {
+    Metadata
+} from 'next';
+
+export async function generateMetadata(
+    {
+        params
+    }: {
+        params: {
+            id: number
+        }
+    }
+): Promise<Metadata> {
+    const post = (await serverRequest(
+        `${serverURL}/post/${params.id}`,
+        HTTPRequestMethod.GET, {
+            cache: 'force-cache'
+        }
+    )).data as Post;
+
+    return {
+        title: post.title
+    };
+}
 
 export default async function Page(
     {
@@ -18,10 +42,11 @@ export default async function Page(
 ) {
     const post = (await serverRequest(
         `${serverURL}/post/${params.id}`,
-        HTTPRequestMethod.GET,
-        { cache: 'force-cache' }
+        HTTPRequestMethod.GET, {
+            cache: 'force-cache'
+        }
     )).data as Post;
-
+    
     return <Post
         post={post}
     />

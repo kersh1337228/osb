@@ -3,10 +3,13 @@
 import {
     HTTPRequestMethod,
     safeHTTPRequestMethods
-} from '../utils/constants';
+} from './constants';
 import {
     cookies
 } from 'next/headers';
+import {
+    notFound
+} from 'next/navigation';
 
 export async function serverRequest(
     url: string,
@@ -24,7 +27,7 @@ export async function serverRequest(
     let body: string | FormData | null;
     if (safeHTTPRequestMethods.includes(method)) {
         const queryParams = new URLSearchParams(data as Record<string, any>);
-        url += queryParams.size ? queryParams : '';
+        url += queryParams.size ? (url.includes('?') ? '&' : '?') + queryParams : '';
         body = null;
     } else {
         const csrftoken = cookieStore.get('csrftoken')?.value;
@@ -51,6 +54,9 @@ export async function serverRequest(
             body
         }
     );
+
+    if (response.status === 404)
+        notFound();
 
     for (const cookie of response.headers.getSetCookie()) {
         const raw = cookie.split('; ');

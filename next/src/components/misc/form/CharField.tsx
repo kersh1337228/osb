@@ -27,7 +27,9 @@ export default function CharField(
         inputRef?: RefObject<HTMLInputElement>;
     }
 ) {
-    return <div>
+    return <div
+        className={styles.field}
+    >
         {
             label ? <label
                 htmlFor={name}
@@ -35,10 +37,11 @@ export default function CharField(
                 {name.charAt(0).toUpperCase() + name.slice(1)}
             </label> : null
         }
-        <ul>
+        <ul
+            className={styles.errors}
+        >
             {errors?.map((error, key) =>
                 <li
-                    className={styles.error}
                     key={key}
                 >
                     {error}

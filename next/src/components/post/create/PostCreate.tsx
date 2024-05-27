@@ -4,48 +4,35 @@ import {
     useState
 } from 'react';
 import {
-    serverRequest
-} from '../../../actions/request';
-import {
-    HTTPRequestMethod,
-    serverURL
-} from '../../../utils/constants';
-import {
     useFormState
 } from 'react-dom';
 import CharField from '../../misc/form/CharField';
-import CategoryField from '../../misc/form/CategoryField';
+import CategoryListField from '../../misc/form/CategoryListField';
 import TextField from '../../misc/form/TextField';
 import styles from './styles.module.css';
+import {
+    createPost
+} from './actions';
 
-export default async function PostCreate() {
+export default function PostCreate() {
     const [categories, setCategories] = useState(new Array<CategoryPartial>());
 
-    async function submit(
+    const [formState, setFormState] = useFormState(async (
         _: Record<string, string[]>,
         formData: FormData
-    ) {
-        return (await serverRequest(
-            `${serverURL}/post/create`,
-            HTTPRequestMethod.POST,
-            {
-                cache: 'force-cache'
-            },
-            {
-                title: formData.get('title'),
-                categories: categories.map(category => category.id),
-                content: formData.get('content')
-            }
-        )).data;
-    }
+    ) => await createPost(
+        formData.get('title') as string,
+        categories.map(category => category.id),
+        formData.get('content') as string
+    ), {});
 
-    const [formState, setFormState] = useFormState(submit, {});
-
-    return <main>
+    return <main
+        className={styles.main}
+    >
         <h1
             className={styles.header}
         >
-            Create new post
+            New post
         </h1>
         <form
             className={styles.form}
@@ -54,18 +41,21 @@ export default async function PostCreate() {
             <CharField
                 name="title"
                 type="text"
-                placeholder="Title"
+                placeholder="Short title"
+                label={true}
                 errors={formState.title}
             />
-            <CategoryField
+            <CategoryListField
                 categories={categories}
                 setCategories={setCategories}
+                label={true}
                 errors={formState.categories}
             />
             <TextField
                 name="content"
-                placeholder="Textual content"
-                errors={formState.conent}
+                placeholder="HTML markdown"
+                label={true}
+                errors={formState.content}
             />
             <button
                 className={styles.button}

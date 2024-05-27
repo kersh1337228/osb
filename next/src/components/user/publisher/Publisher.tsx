@@ -11,7 +11,7 @@ export default function Publisher(
 ) {
     return <Link
         href={`/user/${user.id}`}
-        className={styles.publisher}
+        className={user.is_superuser ? styles.superuser : styles.publisher}
     >
         <Image
             src={user.profile_picture ?? '/img/user.webp'}

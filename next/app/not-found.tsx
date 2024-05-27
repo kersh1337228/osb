@@ -1,14 +1,14 @@
-export default async function NotFound() {
-    return (
-        <main className="fill light">
-            <h1
-                style={{
-                    width: '100%',
-                    color: 'red',
-                    fontSize: '32px'
-                }}>
-                Page not found
-            </h1>
-        </main>
-    );
+import {
+    Metadata
+} from 'next';
+import NotFound from '../src/components/misc/errors/404';
+
+export const metadata: Metadata = {
+    title: 'Not found'
+};
+
+export default async function NotFoundPage() {
+    return <main>
+        <NotFound />
+    </main>;
 }

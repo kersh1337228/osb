@@ -1,50 +1,15 @@
-'use client';
+import Login from '../../../src/components/user/login/Login';
+import {
+    Metadata
+} from 'next';
 
-import {
-    formDataSerialize
-} from '../../../src/utils/functions';
-import {
-    login
-} from '../../../src/actions/auth';
-import CharField from '../../../src/components/misc/form/CharField';
-import {
-    useFormState
-} from 'react-dom';
+export const metadata: Metadata = {
+    title: 'Login'
+};
+
 
 export default function LoginPage() {
-    async function submit(
-        _: any,
-        formData: FormData
-    ) {
-        return await login(
-            formDataSerialize(formData) as
-                LoginCredentials);
-    }
-    const [formState, setFormState] = useFormState(submit, {});
-
-    return <main className="fill">
-        <form
-            className="light"
-            action={setFormState}
-        >
-            <CharField
-                name="username"
-                type="text"
-                placeholder="Username or Email address"
-                errors={formState.username}
-            />
-            <CharField
-                name="password"
-                type="password"
-                placeholder="Password"
-                errors={formState.username}
-            />
-            <button
-                className="form-button"
-                type="submit"
-            >
-                Login
-            </button>
-        </form>;
+    return <main>
+        <Login />
     </main>;
 }

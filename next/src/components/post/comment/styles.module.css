@@ -1,0 +1,82 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #bfbfbf;
+    padding-bottom: 8px;
+}
+
+.date {
+    text-align: right;
+    font-size: 10pt;
+    opacity: 0.6;
+}
+
+.content {
+    padding: 8px 0;
+    font-size: 14pt;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.repliesCount {
+    cursor: pointer;
+    color: black;
+    opacity: 0.5;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.replies {
+    padding: 0 0 32px 0;
+}
+
+.repliesHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    width: 100%;
+}
+
+.replyList {
+    margin-left: 4px;
+    padding-left: 8px;
+    border-left: 1px solid #bfbfbf;
+}
+
+.form {
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    gap: 32px;
+    width: 100%;
+}
+
+.button {
+    color: green;
+    background: #ededee;
+    padding: 5px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 24px;
+    transition: 0.1s;
+}
+
+.button:hover {
+    background: green;
+    color: white;
+}

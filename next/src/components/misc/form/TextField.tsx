@@ -43,10 +43,11 @@ export default function TextField(
                 {name.charAt(0).toUpperCase() + name.slice(1)}
             </label> : null
         }
-        <ul>
+        <ul
+            className={styles.errors}
+        >
             {errors?.map((error, key) =>
                 <li
-                    className={styles.error}
                     key={key}
                 >
                     {error}

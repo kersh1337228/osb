@@ -2,7 +2,9 @@
 
 import {
     Dispatch,
+    RefObject,
     SetStateAction,
+    createRef,
     useEffect,
     useRef,
     useState
@@ -11,54 +13,54 @@ import {
     debounce
 } from '../../../utils/functions';
 import styles from './styles.module.css';
-import { serverRequest } from '../../../actions/request';
-import { HTTPRequestMethod, serverURL } from '../../../utils/constants';
-import CancelIcon from '../icons/Cancel';
+import {
+    serverRequest
+} from '../../../utils/actions';
+import {
+    HTTPRequestMethod,
+    serverURL
+} from '../../../utils/constants';
 
 export default function CategoryField(
     {
-        categories,
-        setCategories,
-        label = false,
+        category,
+        setCategory,
+        label = '',
         errors,
+        className,
+        inputRef
     }: {
-        categories: CategoryPartial[];
-        setCategories: Dispatch<SetStateAction<CategoryPartial[]>>;
-        label?: boolean;
+        category?: CategoryPartial;
+        setCategory: Dispatch<SetStateAction<CategoryPartial | null>>;
+        label?: string;
         errors?: string[];
+        className?: string;
+        inputRef?: RefObject<HTMLInputElement>;
     }
 ) {
-    const inputRef = useRef<HTMLInputElement>(null);
+    inputRef = inputRef ?? createRef<HTMLInputElement>();
     const datalistRef = useRef<HTMLDataListElement>(null);
 
-    const categoryQuery = useRef('');
+    const categoryTitle = useRef(category ? category.title : '');
     const [matches, setMatches] = useState(new Array<CategoryPartial>());
-
-    async function getMatches(
-        query?: string
-    ) {
-        if (query) {
-            const response = (await serverRequest(
-                `${serverURL}/post/category/list`,
-                HTTPRequestMethod.POST,
-                { cache: 'force-cache' },
-                { query: query }
-            )).data as CategoryPartial[];
-
-            return response.filter(
-                match => !categories.some(
-                    category => category.id === match.id));
-        }
-
-        return [];
-    }
 
     const handleSearch = debounce(
         async (
-            query: string
+            title: string
         ): Promise<void> => {
-            setMatches(await getMatches(query));
-            categoryQuery.current = query;
+            const matches = title ? (await serverRequest(
+                `${serverURL}/post/category/list`,
+                HTTPRequestMethod.POST, {
+                    cache: 'no-store'
+                }, {
+                    title
+                }
+            )).data as CategoryPartial[] : [];
+            setMatches(matches);
+
+            setCategory(matches.find(
+                match => match.title === title) ?? null);
+            categoryTitle.current = title;
         }, 300
     );
 
@@ -77,22 +79,21 @@ export default function CategoryField(
         }
     }, [matches.length]);
 
-    useEffect(() => {
-        getMatches(categoryQuery.current).then(setMatches);
-    }, [categories.length]);
-
-    return <div>
+    return <div
+        className={className ?? styles.field}
+    >
         {
             label ? <label
-                htmlFor="categories"
+                htmlFor="category"
             >
-                Categories
+                {label}
             </label> : null
         }
-        <ul>
+        <ul
+            className={styles.errors}
+        >
             {errors?.map((error, key) =>
                 <li
-                    className={styles.error}
                     key={key}
                 >
                     {error}
@@ -101,34 +102,22 @@ export default function CategoryField(
         </ul>
         <input
             className={styles.input}
-            type="text"
-            id="categories"
-            name="categories"
+            type="search"
+            id="category"
+            name="category"
             placeholder="Start typing to get tooltips"
             onChange={(event) => {
                 handleSearch(event.target.value);
             }}
             onKeyDown={(event) => {
                 event.stopPropagation();
-                switch (event.key) {
-                    case 'Enter':
-                        event.preventDefault();
-                        if (matches.length) {
-                            (event.target as HTMLInputElement).value = '';
-                            categoryQuery.current = '';
-                            setCategories(categories.concat(matches[0]));
-                        }
-                        break;
-                    case 'Tab':
-                        event.preventDefault();
-                        if (matches.length) {
-                            (event.target as HTMLInputElement).value = matches[0].title;
-                            categoryQuery.current = matches[0].title;
-                        }
-                        break;
+                if (matches.length && event.key === 'Tab') {
+                    event.preventDefault();
+                    (event.target as HTMLInputElement).value = matches[0].title;
+                    categoryTitle.current = matches[0].title;
                 }
             }}
-            defaultValue={categoryQuery.current}
+            defaultValue={categoryTitle.current}
             ref={inputRef}
         />
         <datalist
@@ -155,25 +144,5 @@ export default function CategoryField(
                 </option>
             )}
         </datalist>
-        <ul
-            className={styles.categories}
-        >
-            {categories.map(category =>
-                <li
-                    key={category.id}
-                    className={styles.category}
-                >
-                    <span>
-                        {category.title}
-                    </span>
-                    <CancelIcon
-                        onClick={(_) => {
-                            setCategories(categories.filter(
-                                cat => cat.id !== category.id));
-                        }}
-                    />
-                </li>
-            )}
-        </ul>
     </div>;
 }

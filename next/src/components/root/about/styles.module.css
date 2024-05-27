@@ -1,0 +1,49 @@
+.about {
+    background: white;
+    color: black;
+}
+
+.about p {
+    text-indent: 0;
+    font-size: 16pt;
+}
+
+.about a {
+    color: green;
+    transition: 0.3s;
+}
+
+.about a:hover {
+    opacity: 0.5;
+}
+
+.about section {
+    padding: 32px 256px;
+}
+
+.sectionHeader {
+    font-size: 32pt;
+    padding-bottom: 32px;
+}
+
+.tech {
+    font-size: 16pt;
+}
+
+.tech h6 {
+    font-size: 12pt;
+    margin: 16px 0;
+}
+
+.list li {
+    margin-left: 16px;
+    list-style: '- ';
+}
+
+.author p {
+    font-family: var(--sf);
+}
+
+.license p {
+    padding-bottom: 16pt;
+}

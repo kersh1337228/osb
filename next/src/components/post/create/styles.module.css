@@ -1,21 +1,33 @@
 .header {
+    margin: 0 auto;
+    padding: 16px 0;
+    width: max-content;
     color: black;
-    font-size: 36px;
-    padding-bottom: 32px;
+    font-size: 24pt;
 }
 
 .form {
     color: black;
     display: grid;
-    width: 300px;
-    margin: 0 auto;
+    margin: 0 768px;
+}
+
+.form label {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.form input, .form textarea {
+    font-size: 12pt;
 }
 
 .button {
+    width: 100%;
     color: green;
     background: #ededee;
     padding: 4px;
-    margin: 8px;
+    margin: 8px 0;
     border: none;
     cursor: pointer;
     border-radius: 7px;
@@ -25,4 +37,26 @@
 .button:hover {
     background: green;
     color: white;
+}
+
+@media (max-width: 1650px) {
+    .form {
+        margin: 0 512px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .form {
+        margin: 0 256px;
+    }
+}
+
+@media (max-width: 800px) {
+    .header {
+        font-size: 18pt;
+    }
+
+    .form {
+        margin: 16px 48px 16px 32px;
+    }
 }

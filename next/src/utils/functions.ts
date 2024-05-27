@@ -22,19 +22,6 @@ export function debounce(
     };
 }
 
-export function debounceSync(
-    callback: (...args: any[]) => void,
-    wait: number
-) {
-    let timeoutId: number;
-    return (...args: any[]) => {
-        window.clearTimeout(timeoutId);
-        timeoutId = window.setTimeout(() => {
-            callback(...args);
-        }, wait);
-    };
-}
-
 export function ratingOrder(
     a: PostMixin,
     b: PostMixin

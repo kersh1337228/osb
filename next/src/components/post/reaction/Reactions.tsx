@@ -12,7 +12,7 @@ import {
 } from '../../misc/providers/UserProvider';
 import {
     serverRequest
-} from '../../../actions/request';
+} from '../../../utils/actions';
 import {
     HTTPRequestMethod,
     serverURL
@@ -20,19 +20,14 @@ import {
 
 export default function Reactions(
     {
-        reactions,
-        reacted_to
+        post
     }: {
-        reactions: {
-            neg: Reaction[];
-            pos: Reaction[];
-        };
-        reacted_to: number;
+        post: PostMixin;
     }
 ) {
     const user = useContext(UserContext);
 
-    const [reacts, setReacts] = useState(reactions);
+    const [reacts, setReacts] = useState(post.reactions);
     const [negVisible, setNegVisible] = useState(false);
     const [posVisible, setPosVisible] = useState(false);
 
@@ -40,7 +35,7 @@ export default function Reactions(
         let negHandler: (() => Promise<void>) | undefined,
             posHandler: (() => Promise<void>) | undefined;
 
-        if (user) {
+        if (user && user.id !== post.publisher.id) {
             const active = reacts.neg.concat(reacts.pos).find(
                 react => react.publisher.id === user.id);
             if (active)
@@ -52,7 +47,7 @@ export default function Reactions(
                             { cache: 'no-store' },
                             {
                                 type: false,
-                                reacted_to
+                                reacted_to: post.id
                             }
                         );
                         if (response.ok)
@@ -93,7 +88,7 @@ export default function Reactions(
                             { cache: 'no-store' },
                             {
                                 type: true,
-                                reacted_to
+                                reacted_to: post.id
                             }
                         );
                         if (response.ok)
@@ -111,7 +106,7 @@ export default function Reactions(
                         { cache: 'no-store' },
                         {
                             type: false,
-                            reacted_to
+                            reacted_to: post.id
                         }
                     );
                     if (response.ok)
@@ -127,7 +122,7 @@ export default function Reactions(
                         { cache: 'no-store' },
                         {
                             type: true,
-                            reacted_to
+                            reacted_to: post.id
                         }
                     );
                     if (response.ok)

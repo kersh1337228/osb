@@ -1,57 +1,27 @@
 .footer {
+    position: page;
+    bottom: 0;
+    left: 0;
     background: #272822;
     box-sizing: border-box;
     height: max-content;
 }
 
-.top {
-    width: 50%;
-    margin: 0 auto;
+.inner {
+    padding: 32px 512px;
 }
 
-.list {
-    border-bottom: 1px solid #ffffff33;
+.row {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.listItem {
-    padding: 16px;
-}
-
-.sublistHeader {
-    font-weight: bold;
-    opacity: 0.8;
-}
-
-.sublist {
-    margin-top: 16px;
-}
-
-.sublistItem {
-    margin-top: 8px;
-}
-
-.bottom {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 16px;
-    width: 50%;
-    margin: 0 auto;
-}
-
-.contacts {
-    flex: 1 1 0;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .contacts ul {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 100%;
     margin-left: -8px;
 }
 
@@ -61,7 +31,6 @@
 }
 
 .locale {
-    flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -74,35 +43,24 @@
 
 .additional {
     margin-top: 8px;
-    flex: 1 1 100%;
-    font-size: 14px;
-}
-
-.author {
-    margin-top: 16px;
-    flex: 1 1 auto;
-    font-family: "SF Pro Display", sans-serif;
-    font-weight: lighter;
-    letter-spacing: 0.045em;
     font-size: 14px;
 }
 
 .meta {
     margin-top: 16px;
-    flex: 0 0 auto;
-    font-family: "SF Pro Display", sans-serif;
     font-weight: lighter;
     letter-spacing: 0.045em;
     font-size: 14px;
 }
 
-.highlightButton {
+.link {
+    color: white;
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.1s;
 }
 
-.highlightButton:hover {
+.link:hover {
     opacity: 1;
 }
 
@@ -122,4 +80,16 @@
 .ellipticButton:hover {
     background: rgba(127, 127, 127, 0.2);
     opacity: 1;
+}
+
+@media (max-width: 1500px) {
+    .inner {
+        padding: 32px 384px;
+    }
+}
+
+@media (max-width: 800px) {
+    .inner {
+        padding: 32px 16px;
+    }
 }

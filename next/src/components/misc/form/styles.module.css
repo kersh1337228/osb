@@ -3,86 +3,46 @@
     width: 100%;
 }
 
-.error {
+.errors {
+    list-style: '- ';
+    margin: 0 16px;
     color: red;
+}
+
+.errors li::selection {
+    background: red;
+    color: white;
 }
 
 .input {
     display: table-cell;
     vertical-align: middle;
     padding: 4px;
-    margin: 8px;
+    margin: 8px 0;
     border: none;
     background: #ededee;
     border-radius: 8px;
     outline: none;
     box-sizing: border-box;
     width: 100%;
-    font-family: "SF Pro Display", sans-serif;
-    font-size: 16px;
-}
-
-textarea.input {
-    overflow: hidden;
-    resize: none;
-}
-
-.editable {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0 8px;
-}
-
-.editable input,
-.editable textarea {
-    margin: 0;
-}
-
-.editable svg,
-.editableImage svg {
-    opacity: 0.5;
-}
-
-.editableImage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px 0;
-}
-
-.editableImageInner {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0 8px;
-}
-
-.editableImageInner input,
-.editableImageInner ul {
-    width: 208px;
-    box-sizing: border-box;
 }
 
 .datalist {
     display: none;
-    margin: -8px 8px 8px 8px;
-    border: 1px solid black;
+    margin-top: -8px;
+    background: #ededee;
     border-radius: 0 0 7px 7px;
     border-top: none;
     box-sizing: border-box;
-    width: 300px;
-    padding: 5px;
+    padding: 4px 0;
     max-height: 10rem;
     overflow-y: auto
-
 }
 
 .datalist option {
     padding: 4px;
     color: black;
     margin-bottom: 1px;
-    font-size: 16px;
     cursor: pointer;
 }
 
@@ -92,18 +52,22 @@ textarea.input {
 }
 
 .select {
+    display: table-cell;
+    width: 100%;
+    background: #ededee;
+    color: green;
+    cursor: pointer;
     padding: 4px 6px;
     border: none;
-    background: #ededee;
     border-radius: 32px;
     outline: none;
     box-sizing: border-box;
-    width: 100%;
-    font-size: 12pt;
+    transition: 0.3s;
 }
 
-.select option {
-
+.select:hover {
+    background-color: green;
+    color: white;
 }
 
 .categories {

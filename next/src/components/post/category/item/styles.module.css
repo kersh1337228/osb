@@ -1,0 +1,24 @@
+.categoryListItem {
+    margin: 8px 0;
+}
+
+.link {
+    color: green;
+    transition: 0.3s;
+}
+
+.link:hover {
+    opacity: 0.5;
+}
+
+.category {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.children {
+    margin-left: 4px;
+    padding-left: 8px;
+    border-left: 1px solid #bfbfbf;
+}

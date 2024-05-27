@@ -1,11 +1,35 @@
 import {
     serverRequest
-} from '../../../src/actions/request';
+} from '../../../src/utils/actions';
 import {
     HTTPRequestMethod,
     serverURL
 } from '../../../src/utils/constants';
-import User from '../../../src/components/user/User';
+import User from '../../../src/components/user/user/User';
+import {
+    Metadata
+} from 'next';
+
+export async function generateMetadata(
+    {
+        params
+    }: {
+        params: {
+            id: number
+        }
+    }
+): Promise<Metadata> {
+    const user = (await serverRequest(
+        `${serverURL}/user/${params.id}`,
+        HTTPRequestMethod.GET, {
+            cache: 'force-cache'
+        }
+    )).data as User;
+
+    return {
+        title: user.username
+    };
+}
 
 export default async function UserPage(
     {
@@ -18,8 +42,7 @@ export default async function UserPage(
 ) {
     const user = (await serverRequest(
         `${serverURL}/user/${params.id}`,
-        HTTPRequestMethod.GET,
-        {
+        HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }
     )).data as User;
