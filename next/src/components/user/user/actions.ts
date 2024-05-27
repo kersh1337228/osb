@@ -4,8 +4,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import {
     redirect
@@ -15,7 +14,7 @@ export async function register(
     credentials: RegisterCredentials
 ) {
     const response = await serverRequest(
-        `${serverURL}/user/register`,
+        'user/register',
         HTTPRequestMethod.POST, {
             cache: 'no-store'
         },
@@ -32,7 +31,7 @@ export async function login(
     credentials: LoginCredentials
 ) {
     const response = await serverRequest(
-        `${serverURL}/user/login`,
+        'user/login',
         HTTPRequestMethod.POST, {
             cache: 'no-store'
         }, credentials
@@ -46,7 +45,7 @@ export async function login(
 
 export async function logout() {
     const response = await serverRequest(
-        `${serverURL}/user/logout`,
+        'user/logout',
         HTTPRequestMethod.POST, {
             cache: 'no-store'
         }
@@ -58,7 +57,7 @@ export async function logout() {
 
 export async function authenticate(): Promise<UserPartial | null> {
     const response = await serverRequest(
-        `${serverURL}/user/authenticate`,
+        'user/authenticate',
         HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }
@@ -74,7 +73,7 @@ export async function deleteUser(
     id: number
 ) {
     const response = await serverRequest(
-        `${serverURL}/user/delete/${id}`,
+        `user/delete/${id}`,
         HTTPRequestMethod.DELETE, {
             cache: 'no-store'
         }

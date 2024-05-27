@@ -3,8 +3,7 @@
 import {
     dateTimeFormat,
     HTTPRequestMethod,
-    orders,
-    serverURL
+    orders
 } from '../../../utils/constants';
 import Reply from '../reply/Reply';
 import Reactions from '../reaction/Reactions';
@@ -48,6 +47,8 @@ export default function Comment(
     const [replies, setReplies] = useState(comment.replies);
     const [visible, setVisible] = useState(false);
     const [content, setContent] = useState(comment.content);
+    const [contentParsed, setContentParsed] = useState(comment.content_parsed);
+
     const [order, setOrder] = useState<Order>('best');
 
     const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -57,10 +58,10 @@ export default function Comment(
         formData: FormData
     ) => {
         const response = await serverRequest(
-            `${serverURL}/post/reply/create`,
-            HTTPRequestMethod.POST,
-            { cache: 'no-store' },
-            {
+            'post/reply/create',
+            HTTPRequestMethod.POST, {
+                cache: 'no-store'
+            }, {
                 replied_post: comment.id,
                 content: formData.get('content')
             }
@@ -108,16 +109,16 @@ export default function Comment(
                 <div
                     className={styles.date}
                 >
-                    created: {dateTimeFormat.format(
-                    new Date(comment.publish_time)
-                )}
+                    created: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(comment.publish_time))}
+                    </time>
                 </div>
                 <div
                     className={styles.date}
                 >
-                    updated: {dateTimeFormat.format(
-                    new Date(comment.update_time)
-                )}
+                    updated: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(comment.update_time))}
+                    </time>
                 </div>
             </div>
         </div>
@@ -125,22 +126,27 @@ export default function Comment(
             value={content}
             setValue={async (content: string) => {
                 const response = await serverRequest(
-                    `${serverURL}/post/comment/update/${comment.id}`,
-                    HTTPRequestMethod.PATCH,
-                    { cache: 'no-store' },
-                    { content }
+                    `post/comment/update/${comment.id}`,
+                    HTTPRequestMethod.PATCH, {
+                        cache: 'no-store'
+                    }, {
+                        content
+                    }
                 );
 
-                if (response.ok)
-                    setContent(content);
+                if (response.ok) {
+                    setContentParsed(response.data.content_parsed);
+                    setContent(response.data.content);
+                }
 
                 return response;
             }}
             onDelete={async () => {
                 const response = await serverRequest(
-                    `${serverURL}/post/comment/delete/${comment.id}`,
-                    HTTPRequestMethod.DELETE,
-                    { cache: 'no-store' }
+                    `post/comment/delete/${comment.id}`,
+                    HTTPRequestMethod.DELETE, {
+                        cache: 'no-store'
+                    }
                 );
 
                 if (response.ok)
@@ -150,16 +156,14 @@ export default function Comment(
             placeholder="Reply"
             allowEdit={user.id === comment.publisher.id}
         >
-            <p
+            <article
+                dangerouslySetInnerHTML={{ __html: contentParsed }}
                 className={styles.content}
-            >
-                {content}
-            </p>
-        </EditableText> : <p
+            ></article>
+        </EditableText> : <article
+            dangerouslySetInnerHTML={{ __html: contentParsed }}
             className={styles.content}
-        >
-            {content}
-        </p>}
+        ></article>}
         <div
             className={styles.footer}
         >

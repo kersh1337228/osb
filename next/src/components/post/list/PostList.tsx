@@ -4,8 +4,9 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod, maxDate, minDate,
-    serverURL
+    HTTPRequestMethod,
+    maxDate,
+    minDate
 } from '../../../utils/constants';
 import PostListItem from './item/PostListItem';
 import styles from './styles.module.css';
@@ -74,7 +75,7 @@ export default function PostList(
 
         (async () => {
             const response = await serverRequest(
-                `${serverURL}/post/list`,
+                'post/list',
                 HTTPRequestMethod.POST, {
                     cache: 'no-store'
                 }, {

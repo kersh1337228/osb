@@ -17,8 +17,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 
 export default function CategoryField(
@@ -49,7 +48,7 @@ export default function CategoryField(
             title: string
         ): Promise<void> => {
             const matches = title ? (await serverRequest(
-                `${serverURL}/post/category/list`,
+                'post/category/list',
                 HTTPRequestMethod.POST, {
                     cache: 'no-store'
                 }, {

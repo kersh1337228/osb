@@ -1,8 +1,7 @@
 'use client';
 
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../../utils/constants';
 import styles from './styles.module.css';
 import Editable from '../../../misc/editable/Editable';
@@ -39,7 +38,7 @@ export default function CategoryListItem(
                     value={title}
                     setValue={async (title: string) => {
                         const response = await serverRequest(
-                            `${serverURL}/post/category/update/${category.id}`,
+                            `post/category/update/${category.id}`,
                             HTTPRequestMethod.PATCH,
                             { cache: 'no-store' },
                             { title }
@@ -52,7 +51,7 @@ export default function CategoryListItem(
                     }}
                     onDelete={async () => {
                         const response = await serverRequest(
-                            `${serverURL}/post/category/delete/${category.id}`,
+                            `post/category/delete/${category.id}`,
                             HTTPRequestMethod.DELETE, {
                                 cache: 'no-store'
                             }
@@ -78,7 +77,7 @@ export default function CategoryListItem(
                 value={category.parent_category}
                 setValue={async (parent_category: number | null) => {
                     const response = await serverRequest(
-                        `${serverURL}/post/category/update/${category.id}`,
+                        `post/category/update/${category.id}`,
                         HTTPRequestMethod.PATCH, {
                             cache: 'no-store'
                         }, {

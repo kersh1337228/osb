@@ -2,8 +2,7 @@ import {
     serverRequest
 } from '../../../src/utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../src/utils/constants';
 import Post from '../../../src/components/post/post/Post';
 import {
@@ -20,7 +19,7 @@ export async function generateMetadata(
     }
 ): Promise<Metadata> {
     const post = (await serverRequest(
-        `${serverURL}/post/${params.id}`,
+        `post/${params.id}`,
         HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }
@@ -41,7 +40,7 @@ export default async function Page(
     }
 ) {
     const post = (await serverRequest(
-        `${serverURL}/post/${params.id}`,
+        `post/${params.id}`,
         HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }

@@ -62,8 +62,13 @@
     padding: 8px 356px;
 }
 
+.content textarea {
+    font-family: revert;
+}
+
 .content * {
     font-size: 14pt;
+    font-family: var(--cm);
 }
 
 .markdown {

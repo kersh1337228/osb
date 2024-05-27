@@ -4,8 +4,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import {
     redirect
@@ -15,7 +14,7 @@ export async function deletePost(
     id: number
 ) {
     const response = await serverRequest(
-        `${serverURL}/post/delete/${id}`,
+        `post/delete/${id}`,
         HTTPRequestMethod.DELETE, {
             cache: 'no-store'
         }

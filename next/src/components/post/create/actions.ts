@@ -4,8 +4,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import {
     redirect
@@ -17,7 +16,7 @@ export async function createPost(
     content: string
 ) {
     const response = await serverRequest(
-        `${serverURL}/post/create`,
+        'post/create',
         HTTPRequestMethod.POST, {
             cache: 'no-store'
         }, {

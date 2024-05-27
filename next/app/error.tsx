@@ -1,22 +1,22 @@
 'use client';
 
-export default async function ErrorPage(
+import Error from 'next/error';
+import CommonError from '../src/components/misc/errors/common';
+
+export default function ErrorPage(
     {
         error,
         reset
     }: {
-        error: Error & { digest?: string }
-        reset: () => void
+        error: Error & { digest?: string };
+        reset: () => void;
     }
 ) {
     return <main>
-        <h1>
-            {error.message}
-        </h1>
-        <button
-            onClick={reset}
-        >
-            Retry
-        </button>
+        <CommonError
+            // @ts-ignore
+            error={error}
+            reset={reset}
+        />
     </main>;
 }

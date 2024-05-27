@@ -73,6 +73,7 @@ interface PostPartial extends PostMixin {
 }
 
 interface Post extends PostPartial {
+    content_parsed: string;
     comments: PostComment[];
 }
 
@@ -82,6 +83,7 @@ interface Reaction extends Model {
 }
 
 interface PostComment extends PostMixin {
+    content_parsed: string;
     replies: Reply[];
 }
 

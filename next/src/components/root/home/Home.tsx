@@ -3,14 +3,13 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import Link from 'next/link';
 
 export default async function Home() {
     const popular_categories = (await serverRequest(
-        `${serverURL}/post/category`,
+        'post/category',
         HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }, {

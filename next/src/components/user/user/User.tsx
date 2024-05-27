@@ -2,8 +2,7 @@
 
 import {
     dateTimeFormat,
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import PostListItem from '../../post/list/item/PostListItem';
 import 'next/font/local';
@@ -53,7 +52,7 @@ export default function User(
     ) {
         return async (value: string) => {
             const response = await serverRequest(
-                `${serverURL}/user/update/${user.id}`,
+                `user/update/${user.id}`,
                 HTTPRequestMethod.PATCH,
                 { cache: 'no-store' },
                 { [name]: value }
@@ -91,7 +90,7 @@ export default function User(
                                 };
 
                             const response = await serverRequest(
-                                `${serverURL}/user/update/${user.id}`,
+                                `user/update/${user.id}`,
                                 HTTPRequestMethod.PATCH,
                                 { cache: 'no-store' },
                                 data
@@ -154,9 +153,9 @@ export default function User(
                         <span
                             className={styles.lastLogin}
                         >
-                            last login: {dateTimeFormat.format(
-                            new Date(user.last_login)
-                        )}
+                            last login: <time suppressHydrationWarning>
+                                {dateTimeFormat.format(new Date(user.last_login))}
+                            </time>
                         </span>
                     </div>
                     <table
@@ -234,8 +233,9 @@ export default function User(
                                     type="date"
                                     placeholder="Birthdate"
                                 >
-                                    {birthdate ? (new Date(birthdate))
-                                        .toLocaleDateString('ru-RU') : '-'}
+                                    {birthdate ? <time suppressHydrationWarning>
+                                        {(new Date(birthdate)).toLocaleDateString('ru-RU')}
+                                    </time> : '-'}
                                 </Editable>
                             </td>
                         </tr>
@@ -330,9 +330,9 @@ export default function User(
                         <span
                             className={styles.lastLogin}
                         >
-                            last login: {dateTimeFormat.format(
-                            new Date(user.last_login)
-                        )}
+                            last login: <time suppressHydrationWarning>
+                                {dateTimeFormat.format(new Date(user.last_login))}
+                            </time>
                         </span>
                     </div>
                     <table
@@ -376,8 +376,9 @@ export default function User(
                                 Birthdate:
                             </th>
                             <td>
-                                {birthdate ? (new Date(birthdate))
-                                    .toLocaleDateString('ru-RU') : null}
+                                {birthdate ? <time suppressHydrationWarning>
+                                    {(new Date(birthdate)).toLocaleDateString('ru-RU')}
+                                </time> : '-'}
                             </td>
                         </tr>
                         <tr

@@ -14,8 +14,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 
 export default function Reactions(
@@ -42,7 +41,7 @@ export default function Reactions(
                 if (active.type) {
                     negHandler = async () => {
                         const response = await serverRequest(
-                            `${serverURL}/post/reaction/update/${active.id}`,
+                            `post/reaction/update/${active.id}`,
                             HTTPRequestMethod.PATCH,
                             { cache: 'no-store' },
                             {
@@ -58,7 +57,7 @@ export default function Reactions(
                     };
                     posHandler = async () => {
                         const response = await serverRequest(
-                            `${serverURL}/post/reaction/delete/${active.id}`,
+                            `post/reaction/delete/${active.id}`,
                             HTTPRequestMethod.DELETE,
                             { cache: 'no-store' }
                         );
@@ -71,7 +70,7 @@ export default function Reactions(
                 } else {
                     negHandler = async () => {
                         const response = await serverRequest(
-                            `${serverURL}/post/reaction/delete/${active.id}`,
+                            `post/reaction/delete/${active.id}`,
                             HTTPRequestMethod.DELETE,
                             { cache: 'no-store' }
                         );
@@ -83,7 +82,7 @@ export default function Reactions(
                     };
                     posHandler = async () => {
                         const response = await serverRequest(
-                            `${serverURL}/post/reaction/update/${active.id}`,
+                            `post/reaction/update/${active.id}`,
                             HTTPRequestMethod.PATCH,
                             { cache: 'no-store' },
                             {
@@ -101,7 +100,7 @@ export default function Reactions(
             else {
                 negHandler = async () => {
                     const response = await serverRequest(
-                        `${serverURL}/post/reaction/create`,
+                        'post/reaction/create',
                         HTTPRequestMethod.POST,
                         { cache: 'no-store' },
                         {
@@ -117,7 +116,7 @@ export default function Reactions(
                 };
                 posHandler = async () => {
                     const response = await serverRequest(
-                        `${serverURL}/post/reaction/create`,
+                        'post/reaction/create',
                         HTTPRequestMethod.POST,
                         { cache: 'no-store' },
                         {

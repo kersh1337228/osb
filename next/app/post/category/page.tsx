@@ -2,8 +2,7 @@ import {
     serverRequest
 } from '../../../src/utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../src/utils/constants';
 import {
     Metadata
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function Categories() {
     const categories = (await serverRequest(
-        `${serverURL}/post/category/list`,
+        'post/category/list',
         HTTPRequestMethod.GET, {
             cache: 'force-cache'
         }

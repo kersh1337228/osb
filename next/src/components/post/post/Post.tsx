@@ -3,8 +3,7 @@
 import {
     dateTimeFormat,
     HTTPRequestMethod,
-    orders,
-    serverURL
+    orders
 } from '../../../utils/constants';
 import {
     Dispatch,
@@ -53,6 +52,7 @@ export default function Post(
     const [title, setTitle] = useState(post.title);
     const [categories, setCategories] = useState(post.categories);
     const [content, setContent] = useState(post.content);
+    const [contentParsed, setContentParsed] = useState(post.content_parsed);
 
     const [comments, setComments] = useState(post.comments);
     const [visible, setVisible] = useState(false);
@@ -64,10 +64,12 @@ export default function Post(
     ) {
         return async (value: string | number[]) => {
             const response = await serverRequest(
-                `${serverURL}/post/update/${post.id}`,
-                HTTPRequestMethod.PATCH,
-                { cache: 'no-store' },
-                { [name]: value }
+                `post/update/${post.id}`,
+                HTTPRequestMethod.PATCH, {
+                    cache: 'no-store'
+                }, {
+                    [name]: value
+                }
             );
 
             if (response.ok)
@@ -84,7 +86,7 @@ export default function Post(
         formData: FormData
     ) => {
         const response = await serverRequest(
-            `${serverURL}/post/comment/create`,
+            'post/comment/create',
             HTTPRequestMethod.POST,
             { cache: 'no-store' },
             {
@@ -154,16 +156,16 @@ export default function Post(
                 <div
                     className={styles.date}
                 >
-                created: {dateTimeFormat.format(
-                    new Date(post.publish_time)
-                )}
+                    created: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(post.publish_time))}
+                    </time>
                 </div>
                 <div
                     className={styles.date}
                 >
-                    updated: {dateTimeFormat.format(
-                    new Date(post.update_time)
-                )}
+                    updated: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(post.update_time))}
+                    </time>
                 </div>
             </div>
         </section>
@@ -199,20 +201,36 @@ export default function Post(
         >
             {user && (user.id === post.publisher.id || user.is_superuser) ? <EditableText
                 value={content}
-                setValue={setValue('content', setContent)}
+                setValue={async (content: string) => {
+                    const response = await serverRequest(
+                        `post/update/${post.id}`,
+                        HTTPRequestMethod.PATCH, {
+                            cache: 'no-store'
+                        }, {
+                            content
+                        }
+                    );
+
+                    if (response.ok) {
+                        setContentParsed(response.data.content_parsed);
+                        setContent(response.data.content);
+                    }
+
+                    return response;
+                }}
                 onDelete={async () => await deletePost(post.id)}
                 name="content"
                 placeholder="Post HTML"
                 allowEdit={user.id === post.publisher.id}
             >
-                <div
-                    dangerouslySetInnerHTML={{ __html: content }}
+                <article
+                    dangerouslySetInnerHTML={{ __html: contentParsed }}
                     className={styles.markdown}
-                ></div>
-            </EditableText> : <div
-                dangerouslySetInnerHTML={{ __html: content }}
+                ></article>
+            </EditableText> : <article
+                dangerouslySetInnerHTML={{ __html: contentParsed }}
                 className={styles.markdown}
-            ></div>}
+            ></article>}
         </section>
         <div
             className={styles.footer}

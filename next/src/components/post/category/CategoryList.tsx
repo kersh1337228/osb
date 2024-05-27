@@ -4,8 +4,7 @@ import {
     serverRequest
 } from '../../../utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../../utils/constants';
 import {
     useState,
@@ -38,7 +37,7 @@ export default function CategoryList(
             title: string
         ): Promise<void> => {
             setMatches(title ? (await serverRequest(
-                `${serverURL}/post/category`,
+                'post/category',
                 HTTPRequestMethod.POST, {
                     cache: 'no-store'
                 }, {
@@ -56,7 +55,7 @@ export default function CategoryList(
         formData: FormData
     ) => {
         const response = await serverRequest(
-            `${serverURL}/post/category/create`,
+            'post/category/create',
             HTTPRequestMethod.POST, {
                 cache: 'no-store'
             }, {

@@ -3,8 +3,7 @@
 import {
     dateTimeFormat,
     HTTPRequestMethod,
-    orders,
-    serverURL
+    orders
 } from '../../../utils/constants';
 import styles from './styles.module.css';
 import Reactions from '../reaction/Reactions';
@@ -47,6 +46,8 @@ export default function Reply(
     const [replies, setReplies] = useState(reply.replies);
     const [visible, setVisible] = useState(false);
     const [content, setContent] = useState(reply.content);
+    const [contentParsed, setContentParsed] = useState(reply.content_parsed);
+
     const [order, setOrder] = useState<Order>('best');
 
     const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -56,7 +57,7 @@ export default function Reply(
         formData: FormData
     ) => {
         const response = await serverRequest(
-            `${serverURL}/post/reply/create`,
+            'post/reply/create',
             HTTPRequestMethod.POST, {
                 cache: 'no-store'
             }, {
@@ -106,16 +107,16 @@ export default function Reply(
                 <div
                     className={styles.date}
                 >
-                    created: {dateTimeFormat.format(
-                    new Date(reply.publish_time)
-                )}
+                    created: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(reply.publish_time))}
+                    </time>
                 </div>
                 <div
                     className={styles.date}
                 >
-                    updated: {dateTimeFormat.format(
-                    new Date(reply.update_time)
-                )}
+                    updated: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(reply.update_time))}
+                    </time>
                 </div>
             </div>
         </div>
@@ -123,7 +124,7 @@ export default function Reply(
             value={content}
             setValue={async (content: string) => {
                 const response = await serverRequest(
-                    `${serverURL}/post/reply/update/${reply.id}`,
+                    `post/reply/update/${reply.id}`,
                     HTTPRequestMethod.PATCH, {
                         cache: 'no-store'
                     }, {
@@ -131,14 +132,16 @@ export default function Reply(
                     }
                 );
 
-                if (response.ok)
-                    setContent(content);
+                if (response.ok) {
+                    setContentParsed(response.data.content_parsed);
+                    setContent(response.data.content);
+                }
 
                 return response;
             }}
             onDelete={async () => {
                 const response = await serverRequest(
-                    `${serverURL}/post/reply/delete/${reply.id}`,
+                    `post/reply/delete/${reply.id}`,
                     HTTPRequestMethod.DELETE, {
                         cache: 'no-store'
                     }
@@ -151,16 +154,14 @@ export default function Reply(
             placeholder="Reply"
             allowEdit={user.id === reply.publisher.id}
         >
-            <p
+            <article
+                dangerouslySetInnerHTML={{ __html: contentParsed }}
                 className={styles.content}
-            >
-                {content}
-            </p>
-        </EditableText> : <p
+            ></article>
+        </EditableText> : <article
+            dangerouslySetInnerHTML={{ __html: contentParsed }}
             className={styles.content}
-        >
-            {content}
-        </p>}
+        ></article>}
         <div
             className={styles.footer}
         >

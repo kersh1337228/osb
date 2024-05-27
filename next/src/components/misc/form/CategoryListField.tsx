@@ -11,8 +11,12 @@ import {
     debounce
 } from '../../../utils/functions';
 import styles from './styles.module.css';
-import { serverRequest } from '../../../utils/actions';
-import { HTTPRequestMethod, serverURL } from '../../../utils/constants';
+import {
+    serverRequest
+} from '../../../utils/actions';
+import {
+    HTTPRequestMethod
+} from '../../../utils/constants';
 import CancelIcon from '../icons/Cancel';
 
 export default function CategoryListField(
@@ -41,7 +45,7 @@ export default function CategoryListField(
     ) {
         if (title) {
             const response = (await serverRequest(
-                `${serverURL}/post/category/list`,
+                'post/category/list',
                 HTTPRequestMethod.POST, {
                     cache: 'no-store'
                 }, {

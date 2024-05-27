@@ -3,8 +3,7 @@ import {
     serverRequest
 } from '../../src/utils/actions';
 import {
-    HTTPRequestMethod,
-    serverURL
+    HTTPRequestMethod
 } from '../../src/utils/constants';
 import { Metadata } from 'next';
 
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Posts() {
     const posts = (await serverRequest(
-        `${serverURL}/post/list`,
+        'post/list',
         HTTPRequestMethod.POST, {
             cache: 'force-cache'
         }

@@ -35,16 +35,16 @@ export default function PostListItem(
                 <div
                     className={styles.date}
                 >
-                    created: {dateTimeFormat.format(
-                    new Date(post.publish_time)
-                )}
+                    created: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(post.publish_time))}
+                    </time>
                 </div>
                 <div
                     className={styles.date}
                 >
-                    updated: {dateTimeFormat.format(
-                    new Date(post.update_time)
-                )}
+                    updated: <time suppressHydrationWarning>
+                        {dateTimeFormat.format(new Date(post.update_time))}
+                    </time>
                 </div>
             </div>
         </div>
@@ -67,12 +67,12 @@ export default function PostListItem(
                 </li>;
             })}
         </ul>
-        <div
+        <article
             dangerouslySetInnerHTML={{
                 __html: `${post.content}...`
             }}
             className={styles.content}
-        ></div>
+        ></article>
         <div
             className={styles.footer}
         >

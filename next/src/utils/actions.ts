@@ -43,9 +43,9 @@ export async function serverRequest(
             headers['Content-Type'] = 'application/json';
         }
     }
-
     const response = await fetch(
-        url,
+        // `http://django:8000/${url}`, // TODO: serverURL
+        `http://0.0.0.0:8000/${url}`,
         {
             ...options,
             method,
