@@ -13,7 +13,6 @@ async def get_user(
         request: ASGIRequest
 ) -> Any:
     if not hasattr(request, "_cached_user"):
-        # request._cached_user = auth.get_user(request)
         request._cached_user = await auth.aget_user(request)
     return request._cached_user
 
@@ -31,6 +30,5 @@ class AuthenticationMiddleware(MiddlewareMixin):
             self: Self,
             request: ASGIRequest
     ) -> None:
-        # request.user = SimpleLazyObject(lambda: async_to_sync(get_user)(request))
         request.user = async_to_sync(get_user)(request)
         request.auser = partial(auser, request)

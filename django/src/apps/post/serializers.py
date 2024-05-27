@@ -19,6 +19,7 @@ from .models import (
     Reply,
     Reaction
 )
+from .utils import parse
 from ..user.models import User
 from ..user.serializers import UserPartialSerializer
 
@@ -217,7 +218,9 @@ class PostPartialSerializer(PostPartialSerializerMixin):
 
     class Meta:
         model = Post
-        fields = '__all__'
+        exclude = (
+            'content_parsed',
+        )
 
 
 class PostSerializer(PostPartialSerializerMixin):
@@ -237,7 +240,19 @@ class PostSerializer(PostPartialSerializerMixin):
         fields = '__all__'
 
 
-class PostEditSerializer(AsyncModelSerializer):
+class PostEditSerializerMixin(AsyncModelSerializer):
+    @validated_method
+    async def create_or_update(
+            self: Self
+    ) -> None | Never:
+        if 'content' in self.validated_data:
+            self.validated_data['content_parsed'] = parse(
+                self.validated_data.get('content')
+            )
+        return await self.save()
+
+
+class PostEditSerializer(PostEditSerializerMixin):
     class Meta:
         model = Post
         exclude = (
@@ -266,7 +281,7 @@ class CommentSerializer(CommentSerializerMixin):
         exclude = ('commented_post',)
 
 
-class CommentEditSerializer(AsyncModelSerializer):
+class CommentEditSerializer(PostEditSerializerMixin):
     class Meta:
         model = Comment
         fields = '__all__'
@@ -279,7 +294,7 @@ class ReplySerializer(CommentSerializerMixin):
         exclude = ('replied_post',)
 
 
-class ReplyEditSerializer(AsyncModelSerializer):
+class ReplyEditSerializer(PostEditSerializerMixin):
     class Meta:
         model = Reply
         fields = '__all__'

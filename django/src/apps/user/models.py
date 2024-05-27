@@ -88,6 +88,13 @@ class UserManager(models.Manager):
         return user
 
 
+def upload_to(
+        user: 'User',
+        filename: str
+) -> str:
+    return f'user/{user.id}/{filename}'
+
+
 class User(models.Model):
     objects = UserManager()
 
@@ -155,6 +162,7 @@ class User(models.Model):
     )
     sex = models.CharField(
         verbose_name='Sex',
+        max_length=6,
         null=True,
         blank=True,
         choices=[
@@ -168,7 +176,7 @@ class User(models.Model):
         blank=True,
     )
     profile_picture = models.ImageField(
-        upload_to=lambda user, filename: f'user/{user.id}/{filename}',
+        upload_to=upload_to,
         null=True,
         blank=True,
         default=None

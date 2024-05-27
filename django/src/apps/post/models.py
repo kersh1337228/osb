@@ -1,5 +1,4 @@
 from typing import Self
-from asgiref.sync import sync_to_async
 from django.core import validators
 from django.dispatch import receiver
 from rest_framework.exceptions import ValidationError
@@ -114,6 +113,11 @@ class PostMixin(models.Model):
         null=False,
         verbose_name='Post content'
     )
+    content_parsed = models.TextField(
+        blank=False,
+        null=False,
+        verbose_name='Parsed content'
+    )
     publish_time = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Publication time'
@@ -167,7 +171,7 @@ class PostMixin(models.Model):
     def __str__(
             self: Self
     ) -> str:
-        return self.content[:128]
+        return self.content_parsed[:128]
 
     class Meta:
         get_latest_by = '-update_time'

@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = bool(os.environ.get('DEBUG', 1))
 
+# ALLOWED_HOSTS = ['next', 'django'] # TODO: ALLOWED_HOSTS
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGINS_ALLOW_ALL = True
@@ -32,7 +33,9 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'src.async_api.middleware.AuthenticationMiddleware',
@@ -71,6 +74,17 @@ DATABASES = {
         'PORT': os.environ.get('SQL_PORT', '5432'),
     }
 }
+CONN_MAX_AGE = None
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "local_cache",
+    }
+}
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 300
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -94,10 +108,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = '/var/www/static' # TODO prod
+# STATIC_ROOT = '/var/www/static' # TODO: STATIC
 STATIC_ROOT = '/home/kersh/dev/python/osb/next/public/static'
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = '/var/www/media'
+# MEDIA_ROOT = '/var/www/media' # TODO: MEDIA
 MEDIA_ROOT = '/home/kersh/dev/python/osb/next/public/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
