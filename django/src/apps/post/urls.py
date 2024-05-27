@@ -6,28 +6,28 @@ urlpatterns = (
     # category
     path(  # post
         'category/create',
-        views.CategoryAPIView.as_view(),
+        views.CategoryEditAPIView.as_view(),
         name='category_create'
     ),
     path(  # patch
         'category/update/<int:id>',
-        views.CategoryAPIView.as_view(),
+        views.CategoryEditAPIView.as_view(),
         name='category_update'
     ),
     path(  # delete
         'category/delete/<int:id>',
-        views.CategoryAPIView.as_view(),
+        views.CategoryEditAPIView.as_view(),
         name='category_delete'
     ),
-    path(  # get
+    path(  # get & post
         'category/list',
         views.CategoryListAPIView.as_view(),
         name='category_list'
     ),
-    path(  # post
-        'category/search',
-        views.CategoryListAPIView.as_view(),
-        name='category_search'
+    path(  # get & post
+        'category',
+        views.CategoryAPIView.as_view(),
+        name='category'
     ),
     # post
     path(  # post

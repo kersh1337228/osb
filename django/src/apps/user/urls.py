@@ -1,8 +1,6 @@
 from rest_framework.urls import path
 from . import views
 
-view = views.UserAPIView.as_view()
-
 
 urlpatterns = (
     # auth
@@ -29,17 +27,17 @@ urlpatterns = (
     # user
     path( # get
         '<int:id>',
-        view,
+        views.UserAPIView.as_view(),
         name='user_read'
     ),
     path( # patch
         'update/<int:id>',
-        view,
+        views.UserAPIView.as_view(),
         name='user_update'
     ),
     path( # delete
         'delete/<int:id>',
-        view,
+        views.UserAPIView.as_view(),
         name='user_delete'
     )
 )

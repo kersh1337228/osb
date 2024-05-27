@@ -4,7 +4,7 @@ from src.apps.post.models import (
 )
 from src.apps.post.serializers import (
     CategoryEditSerializer,
-    CategoryListSerializer,
+    CategorySerializer,
     PostEditSerializer,
     PostSerializer,
     PostPartialSerializer,
@@ -13,7 +13,7 @@ from src.apps.post.serializers import (
     ReactionEditSerializer,
     CommentSerializer,
     ReplySerializer,
-    ReactionSerializer
+    ReactionSerializer, CategoryPartialSerializer
 )
 from src.async_api.class_based import AsyncAPIView
 from rest_framework.response import Response
@@ -23,7 +23,7 @@ from rest_framework import (
 )
 
 
-class CategoryAPIView(AsyncAPIView):
+class CategoryEditAPIView(AsyncAPIView):
     permission_classes = (permissions.IsAdminUser,)
 
     async def post(
@@ -39,7 +39,12 @@ class CategoryAPIView(AsyncAPIView):
         data, ok = await serializer.create_or_update()
         if ok:
             return Response(
-                data={},
+                data=await CategorySerializer(
+                    instance=Category.objects.filter(
+                        parent_category__isnull=True
+                    ).select_related('parent_category'),
+                    many=True
+                ).data,
                 status=status.HTTP_200_OK
             )
         return Response(
@@ -65,7 +70,12 @@ class CategoryAPIView(AsyncAPIView):
             data, ok = await serializer.create_or_update()
             if ok:
                 return Response(
-                    data={},
+                    data=await CategorySerializer(
+                        instance=Category.objects.filter(
+                            parent_category__isnull=True
+                        ).select_related('parent_category'),
+                        many=True
+                    ).data,
                     status=status.HTTP_200_OK
                 )
             return Response(
@@ -92,7 +102,12 @@ class CategoryAPIView(AsyncAPIView):
         if await category.aexists():
             await category.adelete()
             return Response(
-                data={},
+                data=await CategorySerializer(
+                    instance=Category.objects.filter(
+                        parent_category__isnull=True
+                    ).select_related('parent_category'),
+                    many=True
+                ).data,
                 status=status.HTTP_200_OK
             )
         return Response(
@@ -111,9 +126,44 @@ class CategoryListAPIView(AsyncAPIView):
             **kwargs
     ):
         return Response(
-            data=await CategoryListSerializer(
+            data=await CategorySerializer(
                 instance=Category.objects.filter(
                     parent_category__isnull=True
+                ).select_related('parent_category'),
+                many=True
+            ).data,
+            status=status.HTTP_200_OK
+        )
+
+    async def post(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        return Response(
+            data=await CategoryPartialSerializer(
+                instance=Category.objects.filter(
+                    title__icontains=request.data.pop('title')
+                ),
+                many=True
+            ).data,
+            status=status.HTTP_200_OK
+        )
+
+
+class CategoryAPIView(AsyncAPIView):
+    async def get(
+            self,
+            request,
+            *args,
+            **kwargs
+    ):
+        return Response(
+            data=await CategoryPartialSerializer(
+                instance=Category.popularity_order(
+                    Category.objects.select_related('parent_category'),
+                    int(request.query_params.get('limit', 5))
                 ),
                 many=True
             ).data,
@@ -127,12 +177,12 @@ class CategoryListAPIView(AsyncAPIView):
             **kwargs
     ):
         return Response(
-            data=Category.objects.filter(
-                title__icontains=request.data.pop('query')
-            ).values(
-                'id',
-                'title'
-            ),
+            data=await CategorySerializer(
+                instance=Category.objects.filter(
+                    title__icontains=request.data.pop('title')
+                ).select_related('parent_category'),
+                many=True
+            ).data,
             status=status.HTTP_200_OK
         )
 
@@ -238,7 +288,7 @@ class PostEditAPIViewMixin(AsyncAPIView):
                 )
             return Response(
                 data={
-                    'detail': f'Only owner or admin can delete {
+                    'detail': f'Only owner or staff can delete {
                         self.post_model.__name__.lower()
                     }'
                 },
@@ -269,9 +319,12 @@ class PostAPIView(AsyncAPIView):
         try:
             return Response(
                 data=await PostSerializer(
-                    instance=await Post.objects.aget(
-                        id=kwargs.pop('id')
-                    )
+                    instance=await Post.objects
+                        .select_related('publisher')
+                        .prefetch_related('categories')
+                        .aget(
+                            id=kwargs.pop('id')
+                        )
                 ).data,
                 status=status.HTTP_200_OK
             )
@@ -319,9 +372,16 @@ class PostAPIView(AsyncAPIView):
         if publisher:
             query |= {'publisher': publisher}
 
+        offset = request.data.get('offset', 0)
+        limit = request.data.get('limit', 5)
+
         return Response(
             data=await PostPartialSerializer(
-                instance=Post.objects.filter(**query).distinct(),
+                instance=Post.objects
+                    .filter(**query)
+                    .select_related('publisher')
+                    .prefetch_related('categories')
+                    .distinct()[offset:offset + limit],
                 many=True
             ).data,
             status=status.HTTP_200_OK

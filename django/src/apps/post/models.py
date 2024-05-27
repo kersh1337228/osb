@@ -1,6 +1,7 @@
 from typing import Self
 from asgiref.sync import sync_to_async
 from django.core import validators
+from django.dispatch import receiver
 from rest_framework.exceptions import ValidationError
 from django.db import models
 
@@ -28,6 +29,23 @@ class Category(models.Model):
         null=True
     )
 
+    async def is_child(
+            self: Self,
+            category: 'Category'
+    ) -> bool:
+        children = Category.objects.filter(
+            parent_category=self
+        )
+
+        if await children.acontains(category):
+            return True
+
+        async for child in children:
+            if await child.is_child(category):
+                return True
+
+        return False
+
     @property
     def children(
             self: Self
@@ -38,9 +56,56 @@ class Category(models.Model):
             'parent_category'
         )
 
+    @property
+    def posts(
+            self: Self
+    ) -> models.QuerySet:
+        return Post.objects.filter(
+            categories__in=[self]
+        )
+
+    @staticmethod
+    async def popularity_order(
+            categories: models.QuerySet,
+            limit: int = None
+    ):
+        temp = []
+        async for category in categories:
+            temp.append((
+                await Post.objects.filter(
+                    categories__in=[category]
+                ).acount(),
+                category
+            ))
+        temp.sort(key=lambda pair: pair[0], reverse=True)
+
+        for pair in temp[:limit]:
+            yield pair[1]
+
+    def __str__(
+            self: Self
+    ) -> str:
+        return self.title
+
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+
+
+@receiver(
+    models.signals.post_delete,
+    sender=Category
+)
+async def auto_delete_post_on_delete(
+        signal,
+        sender,
+        **kwargs
+):
+    posts = kwargs.get('instance').posts.prefetch_related('categories')
+
+    async for post in posts:
+        if await post.categories.acount() == 1:
+            await post.adelete()
 
 
 class PostMixin(models.Model):
@@ -88,19 +153,28 @@ class PostMixin(models.Model):
                 'type',
                 flat=True
             )
-            pos = sum(await sync_to_async(reactions.__iter__)())
-            neg = await reactions.acount() - pos
-            temp.append((pos - neg, post))
+
+            pos = 0
+            async for reaction in reactions:
+                pos += reaction
+
+            temp.append((2 * pos - await reactions.acount(), post))
         temp.sort(key=lambda pair: pair[0], reverse=True)
 
-        for post in map(lambda pair: pair[1], temp):
-            yield post
-
+        for pair in temp:
+            yield pair[1]
 
     def __str__(
             self: Self
     ) -> str:
         return self.content[:128]
+
+    class Meta:
+        get_latest_by = '-update_time'
+        ordering = (
+            '-update_time',
+            '-publish_time'
+        )
 
 
 class Post(PostMixin):
@@ -118,7 +192,7 @@ class Post(PostMixin):
         )
     )
     categories = models.ManyToManyField(
-        Category
+        to=Category
     )
 
     @property

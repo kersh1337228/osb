@@ -29,26 +29,69 @@ class CategoryEditSerializer(AsyncModelSerializer):
         model = Category
         fields = '__all__'
 
+    @validated_method
+    async def create_or_update(
+            self: Self
+    ) -> None | Never:
+        if self.instance:
+            parent = self.validated_data.get('parent_category')
+            if parent:
+                if parent.id == self.instance.id:
+                    raise ValidationError(detail={
+                        'parent_category': (
+                            "Category can't be its own parent",
+                        ),
+                    })
+                if await self.instance.is_child(parent):
+                    raise ValidationError(detail={
+                        'parent_category': (
+                            "Parent can't be a child of its own children",
+                        ),
+                    })
 
-class CategoryListSerializer(AsyncModelSerializer):
-    children = AsyncSerializerMethodField(read_only=True)
+        return await self.save()
 
-    @staticmethod
-    async def get_children(
-            category: Category
-    ):
-        return await CategoryListSerializer(
-            instance=category.children,
-            many=True
-        ).data
 
+class CategoryPartialSerializer(AsyncModelSerializer):
     class Meta:
         model = Category
         fields = (
             'id',
-            'title',
-            'children'
+            'title'
         )
+
+
+class CategorySerializer(AsyncModelSerializer):
+    children = AsyncSerializerMethodField(read_only=True)
+    posts = AsyncSerializerMethodField(read_only=True)
+    parent_category = AsyncSerializerMethodField(read_only=True)
+
+    @staticmethod
+    async def get_children(
+            category: Category
+    ) -> dict:
+        return await CategorySerializer(
+            instance=category.children,
+            many=True
+        ).data
+
+    @staticmethod
+    async def get_posts(
+            category: Category
+    ) -> int:
+        return await category.posts.acount()
+
+    @staticmethod
+    async def get_parent_category(
+            category: Category
+    ) -> dict | None:
+        return await CategoryPartialSerializer(
+            instance=category.parent_category
+        ).data if category.parent_category else None
+
+    class Meta:
+        model = Category
+        fields = '__all__'
 
 
 # _______________________________|REACTION|_______________________________
@@ -143,16 +186,9 @@ class PostSerializerMixin(AsyncModelSerializer):
         }
 
 
-class PostPartialSerializer(PostSerializerMixin):
+class PostPartialSerializerMixin(PostSerializerMixin):
     categories = AsyncSerializerMethodField(read_only=True)
-    content = serializers.SerializerMethodField(read_only=True)
     comments = AsyncSerializerMethodField(read_only=True)
-
-    @staticmethod
-    def get_content(
-            post: Post
-    ):
-        return post.__str__()
 
     @staticmethod
     async def get_categories(
@@ -169,12 +205,22 @@ class PostPartialSerializer(PostSerializerMixin):
     ):
         return await post.comments.acount()
 
+
+class PostPartialSerializer(PostPartialSerializerMixin):
+    content = serializers.SerializerMethodField(read_only=True)
+
+    @staticmethod
+    def get_content(
+            post: Post
+    ):
+        return post.__str__()
+
     class Meta:
         model = Post
         fields = '__all__'
 
 
-class PostSerializer(PostPartialSerializer):
+class PostSerializer(PostPartialSerializerMixin):
     comments = AsyncSerializerMethodField(read_only=True)
 
     @staticmethod
@@ -185,6 +231,10 @@ class PostSerializer(PostPartialSerializer):
             instance=post.comments,
             many=True
         ).data
+
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 
 class PostEditSerializer(AsyncModelSerializer):
