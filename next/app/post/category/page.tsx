@@ -17,7 +17,7 @@ export default async function Categories() {
     const categories = (await serverRequest(
         'post/category/list',
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as Category[];
 

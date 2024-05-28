@@ -6,10 +6,9 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json .
 RUN npm install
-RUN npx next telemetry disable
 
 COPY . .
-# RUN npm run build
+RUN npx next telemetry disable
+RUN npm run build
 
-#CMD ["npm", "run", "start"]
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

@@ -21,7 +21,7 @@ export async function generateMetadata(
     const user = (await serverRequest(
         `user/${params.id}`,
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as User;
 
@@ -42,7 +42,7 @@ export default async function UserPage(
     const user = (await serverRequest(
         `user/${params.id}`,
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as User;
 

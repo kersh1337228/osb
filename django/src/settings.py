@@ -78,8 +78,7 @@ CONN_MAX_AGE = None
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "local_cache",
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'

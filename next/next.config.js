@@ -8,22 +8,5 @@ module.exports = {
     env: {},
     typescript: {
         ignoreBuildErrors: false
-    },
-    experimental: {
-        turbo: {
-            resolveExtensions: [
-                '.tsx',
-                '.ts',
-                '.jsx',
-                '.js',
-                '.json'
-            ],
-        },
-        turbotrace: {
-            logLevel: 'error',
-            logDetail: false,
-            logAll: false,
-            memoryLimit: 512
-        }
     }
 };

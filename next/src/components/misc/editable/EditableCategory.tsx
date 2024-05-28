@@ -23,7 +23,7 @@ export default function EditableCategory(
         allowDelete = false,
         allowEdit = true,
     }: {
-        value?: CategoryPartial;
+        value: CategoryPartial | null;
         setValue: (category: number | null) => Promise<JSONResponse>;
         name?: string;
         children: React.ReactNode;
@@ -40,7 +40,7 @@ export default function EditableCategory(
         className={styles.editableRow}
     >
         <CategoryField
-            category={category}
+            category={category ?? undefined}
             setCategory={setCategory}
             errors={errors}
         />

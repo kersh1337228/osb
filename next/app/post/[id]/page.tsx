@@ -21,7 +21,7 @@ export async function generateMetadata(
     const post = (await serverRequest(
         `post/${params.id}`,
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as Post;
 
@@ -42,7 +42,7 @@ export default async function Page(
     const post = (await serverRequest(
         `post/${params.id}`,
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as Post;
     

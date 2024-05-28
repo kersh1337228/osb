@@ -11,7 +11,7 @@ export default async function Home() {
     const popular_categories = (await serverRequest(
         'post/category',
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }, {
             limit: 5
         }

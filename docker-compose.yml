@@ -25,7 +25,6 @@ services:
     stdin_open: true
     restart: always
     volumes:
-      #- /app/.next
       - ./next/public/static:/app/public/static
       - ./next/public/media:/app/public/media
     networks:

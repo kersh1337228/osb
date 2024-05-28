@@ -59,7 +59,7 @@ export async function authenticate(): Promise<UserPartial | null> {
     const response = await serverRequest(
         'user/authenticate',
         HTTPRequestMethod.GET, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     );
 

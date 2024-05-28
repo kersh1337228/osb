@@ -46,7 +46,7 @@ interface CategoryPartial extends Model {
 }
 
 interface Category extends CategoryPartial {
-    parent_category: CategoryPartial;
+    parent_category: CategoryPartial | null;
     children: Category[];
     posts: number;
 }

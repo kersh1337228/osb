@@ -15,7 +15,7 @@ export default async function Posts() {
     const posts = (await serverRequest(
         'post/list',
         HTTPRequestMethod.POST, {
-            cache: 'force-cache'
+            cache: 'no-store'
         }
     )).data as PostPartial[];
 
