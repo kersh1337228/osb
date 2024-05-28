@@ -84,6 +84,35 @@ export default async function About() {
                 </a>
             </h6>
         </section>
+        <section>
+            <h1
+                className={styles.sectionHeader}
+            >
+                Content syntax
+            </h1>
+            <p>
+                Content in posts, comments and replies uses default HTML syntax
+                with minor replacement rules and allowed tags list.
+            </p>
+            <p>
+                The only allowed tags are: <code>
+                    &lt;section&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt;, &lt;u&gt;, &lt;table&gt;,
+                    &lt;thead&gt;, &lt;tbody&gt;, &lt;tfoot&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt;,
+                    &lt;caption&gt;, &lt;cite&gt;, &lt;code&gt;, &lt;details&gt;, &lt;summary&gt;,
+                    &lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;,
+                    &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;p&gt;, &lt;q&gt;, &lt;small&gt;,
+                    &lt;sup&gt;, &lt;sub&gt;, &lt;figure&gt;, &lt;figcaption&gt;, &lt;br&gt;, &lt;hr&gt;, &lt;a&gt;.
+                </code>
+            </p>
+            <p>
+                Both <code>&lt;th&gt;</code> and <code>&lt;td&gt;</code> allow colspan and rowspan attributes.
+                Any other tags attributes are prohibited.
+            </p>
+            <p>
+                All links (<code>&lt;a&gt;</code> tags) within content are replaced with reference numbers
+                and then listed below in respective order.
+            </p>
+        </section>
         <section
             id="author"
             className={styles.author}
